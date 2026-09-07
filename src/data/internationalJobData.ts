@@ -559,6 +559,7 @@ export const INITIAL_CANDIDATE_DETAILS: CandidateDetails = {
   fatherName: 'Father / Guardian Name',
   religion: 'Open / Prefer Not to Say',
   cvStyle: 'european',
+  theme: 'classic_amber',
   gulfVisaStatus: 'Immediate Relocation / Employment Visa or Visit Visa Ready',
   hasGulfLicense: false,
   gulfLicenseDetails: 'Valid Indian LMV Driving License (Ready for GCC conversion / driving test)',
@@ -636,6 +637,83 @@ export const JOB_CATEGORIES: {
     defaultTitle: 'Delivery Associate / Courier Driver Assistant',
     description: 'Parcel sorting, route dispatch assistance, safe cargo loading, customer drop-offs',
     badge: 'Transport & Fleet',
+  },
+  {
+    id: 'driver',
+    name: 'Forklift & Driver',
+    defaultTitle: 'Forklift Operator / Heavy Equipment & Truck Driver',
+    description: 'Counterbalance, reach truck, pallet transport, van and container moving',
+    badge: 'Licence / Trades',
+  },
+  {
+    id: 'construction',
+    name: 'Construction Worker',
+    defaultTitle: 'Construction Laborer / Scaffolder & Mason Helper',
+    description: 'Site preparation, concrete mixing, scaffolding assembly, brickwork assistance',
+    badge: 'Infrastructure',
+  },
+  {
+    id: 'cleaning',
+    name: 'Cleaning & Housekeeping',
+    defaultTitle: 'Commercial Cleaner / Facility Housekeeping Staff',
+    description: 'Industrial facility cleaning, sanitization, waste disposal, floor polishing',
+    badge: 'Facility Services',
+  },
+  {
+    id: 'hospitality',
+    name: 'Kitchen & Hospitality',
+    defaultTitle: 'Kitchen Helper / Dishwasher & Food Prep Assistant',
+    description: 'Vegetable prepping, dishwashing, food staging, cafeteria & kitchen cleaning',
+    badge: 'Hospitality',
+  },
+  {
+    id: 'manufacturing',
+    name: 'Factory Operative',
+    defaultTitle: 'Factory Assembler / Production Line Operative',
+    description: 'Assembly line work, product packaging, machinery tending, quality checking',
+    badge: 'Manufacturing',
+  },
+  {
+    id: 'welder',
+    name: 'Welder & Fabricator',
+    defaultTitle: 'Welder / Metal Fabricator & Fitter Assistant',
+    description: 'MIG/TIG/ARC welding, metal cutting, structural assembly, grinding and finishing',
+    badge: 'Skilled Technical',
+  },
+  {
+    id: 'electrician',
+    name: 'Electrician & Maintenance',
+    defaultTitle: 'Electrician Assistant / Maintenance Technician',
+    description: 'Wiring, panel installation, cable pulling, facility electrical upkeep',
+    badge: 'Technical Trade',
+  },
+  {
+    id: 'agriculture',
+    name: 'Farm & Agriculture',
+    defaultTitle: 'Agricultural Worker / Greenhouse & Farm Helper',
+    description: 'Crop harvesting, sorting, greenhouse upkeep, fruit picking, nursery labor',
+    badge: 'Agriculture',
+  },
+  {
+    id: 'retail',
+    name: 'Retail & Cashier',
+    defaultTitle: 'Supermarket Cashier / Store Stocker & Retail Associate',
+    description: 'POS cashiering, shelf replenishment, customer assistance, inventory audit',
+    badge: 'Customer Facing',
+  },
+  {
+    id: 'security',
+    name: 'Security Guard',
+    defaultTitle: 'Security Guard / Facility & Gate Watchman',
+    description: 'Access control, patrol rounds, gate logging, visitor security screening',
+    badge: 'Protection',
+  },
+  {
+    id: 'custom',
+    name: 'Other / Custom Job',
+    defaultTitle: 'Professional Specialist (Custom Role)',
+    description: 'Manually enter your custom job title, trade, or specialized industry role',
+    badge: '100% Customizable',
   },
 ];
 
@@ -729,21 +807,144 @@ export function generateCoverLetterContent(
     };
   }
 
-  // Delivery jobs
+  if (category === 'driver') {
+    return {
+      salutation: `Dear Transport & Fleet Recruitment Team in ${countryName},`,
+      paragraph1_intro: isSingapore
+        ? `I am writing with great enthusiasm to apply for the Forklift Operator / Heavy Equipment & Driver position with your company in Singapore under the Ministry of Manpower (MOM) Work Permit framework. I bring verified machinery handling skills, high safety awareness, and rigorous discipline to your daily freight and transport operations.`
+        : `I am writing with great enthusiasm to apply for the Forklift Operator / Heavy Equipment & Driver position with your company in ${countryName}. I bring verified machinery handling skills, high safety awareness, and rigorous discipline to your transport and warehouse operations.`,
+      paragraph2_experience: `I possess extensive experience operating counterbalance forklifts, reach trucks, and light-to-medium transport vehicles. My hands-on background includes safely maneuvering palletized cargo in narrow aisles, high-rack stacking, trailer loading/offloading, and daily pre-operational equipment inspections to ensure zero mechanical failures.`,
+      paragraph3_skills_safety: `Safety is at the core of my driving and handling practice. I strictly follow speed limits, pedestrian walkway clearances, load capacity ratings, and PPE protocols. I am familiar with digital fleet loggers, GPS routing, and cargo stabilization techniques.`,
+      paragraph4_eligibility_shifts: isSingapore
+        ? `As an Indian citizen seeking MOM Work Permit sponsorship in Singapore, I have full personal flexibility to work rotating day and night shifts, overtime, and urgent dispatch cycles. My passport has long validity, and my background verification documents are ready for swift IPA processing.`
+        : `As an Indian citizen seeking ${permitName} sponsorship in ${countryName}, I have full personal flexibility to work rotating day and night shifts, overtime, and urgent dispatch cycles. My passport has long validity, and my background verification documents are ready for immediate visa filing.`,
+      paragraph5_closing: `Thank you for reviewing my application. I would welcome an interview to discuss how my safe handling and equipment operation skills will benefit your fleet and distribution team.`,
+      signOff: 'Respectfully yours,',
+    };
+  }
+
+  if (category === 'construction') {
+    return {
+      salutation: `Dear Construction Site Manager / Project Recruitment in ${countryName},`,
+      paragraph1_intro: `I am writing to express my strong motivation in applying for the Construction Worker / Site Helper position with your projects in ${countryName}. As a physically resilient and safety-conscious worker from India, I am eager to contribute my labor, endurance, and practical masonry and scaffolding skills to your construction developments.`,
+      paragraph2_experience: `My hands-on experience includes site preparation, manual earthmoving, concrete mixing and pouring assistance, scaffolding erection support, brick and block staging, and general site cleanup. I am capable of sustained heavy labor in outdoor environments, adhering to strict builder deadlines without compromising workmanship.`,
+      paragraph3_skills_safety: `I strictly abide by site occupational health and safety regulations, including full PPE adherence (helmet, steel-toe boots, harness), tool maintenance, and hazard avoidance in multi-level work zones. I work harmoniously with multicultural crews and follow engineering supervisors' instructions with precision.`,
+      paragraph4_eligibility_shifts: `I hold Indian citizenship and require employer work permit sponsorship (${permitName}). Being single and unencumbered, I am fully prepared for early morning starts, weekend shifts, and intensive construction project timelines. My passport, police clearance, and medical fitness records are complete.`,
+      paragraph5_closing: `I am eager to prove my dedication on your job site in ${countryName}. Thank you for your consideration, and I look forward to an interview opportunity.`,
+      signOff: 'Sincerely yours,',
+    };
+  }
+
+  if (category === 'cleaning') {
+    return {
+      salutation: `Dear Facility Services / Housekeeping Recruitment in ${countryName},`,
+      paragraph1_intro: `I am pleased to submit my application for the Commercial Cleaner / Facility Housekeeping Staff role with your esteemed company in ${countryName}. I am an industrious, detail-oriented, and dependable worker dedicated to maintaining pristine hygiene and safety standards across commercial, industrial, and residential properties.`,
+      paragraph2_experience: `My background includes sweeping, scrubbing, and polishing large floor spaces with commercial cleaning equipment, sanitizing restrooms and public amenities, segregating and disposing of waste according to environmental rules, and restocking sanitization supplies accurately.`,
+      paragraph3_skills_safety: `I have a thorough understanding of cleaning chemical handling (COSHH / safety data sheets), proper dilution ratios, color-coded microfiber cross-contamination prevention, and safety signage. I work quietly and efficiently with minimal supervision.`,
+      paragraph4_eligibility_shifts: `I am an Indian national seeking work permit sponsorship (${permitName}) in ${countryName}. I am available for flexible schedules, including early mornings, late evening sanitization shifts, and weekend coverage. My documentation is up to date for immediate processing.`,
+      paragraph5_closing: `Thank you for reviewing my application. I look forward to the opportunity to speak with you and demonstrate my high standards of hygiene and reliability.`,
+      signOff: 'Best regards,',
+    };
+  }
+
+  if (category === 'hospitality') {
+    return {
+      salutation: `Dear Hospitality & Kitchen Recruitment Team in ${countryName},`,
+      paragraph1_intro: `I am excited to apply for the Kitchen Helper / Food Preparation Assistant position with your organization in ${countryName}. With a strong passion for food service and rigorous kitchen cleanliness, I am eager to support your culinary team in delivering exceptional dining operations.`,
+      paragraph2_experience: `My experience includes washing, peeling, and cutting vegetables and ingredients, operating commercial dishwashers, scrubbing cookware, organizing walk-in cold storage, and maintaining spotless food preparation stations under high-volume service conditions.`,
+      paragraph3_skills_safety: `I strictly enforce HACCP food safety standards, personal hygiene, correct food temperature storage, and non-slip kitchen safety practices. I communicate well under pressure and maintain a friendly, cooperative spirit with head chefs, cooks, and service staff.`,
+      paragraph4_eligibility_shifts: `I am seeking employer work permit sponsorship (${permitName}) in ${countryName}. Being single, I have 100% availability for split shifts, late dinner service, weekend rushes, and holiday schedules. My passport, PCC, and health clearances are in order.`,
+      paragraph5_closing: `I would be thrilled to bring my energy and hygiene dedication to your kitchen team. Thank you for your time and consideration.`,
+      signOff: 'Warm regards,',
+    };
+  }
+
+  if (category === 'manufacturing') {
+    return {
+      salutation: `Dear Production & Plant Manager in ${countryName},`,
+      paragraph1_intro: `I am writing to express my interest in joining your manufacturing facility in ${countryName} as a Factory Operative / Assembly Line Worker. I offer speed, manual dexterity, and disciplined adherence to quality assurance and production quotas.`,
+      paragraph2_experience: `My background spans component assembly, packaging finished goods into cartons, operating basic production machinery, conducting visual defect inspections, and staging products for warehouse transfer. I am accustomed to working along conveyor systems at continuous production cadence.`,
+      paragraph3_skills_safety: `I hold a zero-tolerance attitude towards industrial safety risks, strictly utilizing machine guards, emergency stop procedures, and mandatory PPE. I learn standard operating procedures (SOPs) rapidly and maintain tidy, organized workstations under 5S methodologies.`,
+      paragraph4_eligibility_shifts: `I hold Indian citizenship and am actively seeking ${permitName} sponsorship. I am prepared for 8- to 12-hour rotating shifts, night production schedules, and overtime demands. My passport and clean background records are ready.`,
+      paragraph5_closing: `Thank you for considering my profile. I look forward to the opportunity to discuss how my stamina and precision can support your factory output goals.`,
+      signOff: 'Sincerely,',
+    };
+  }
+
+  if (category === 'welder') {
+    return {
+      salutation: `Dear Workshop & Technical Hiring Manager in ${countryName},`,
+      paragraph1_intro: `I am writing to apply for the Welder / Metal Fabricator position with your industrial facility in ${countryName}. As a technically trained and disciplined fabrication worker, I am eager to apply my welding, cutting, and metal assembly skills to your operations under ${permitName} sponsorship.`,
+      paragraph2_experience: `I possess hands-on proficiency in MIG, TIG, and ARC welding processes across mild steel and various alloys. My capabilities include reading mechanical drawings, tack welding, weld seam cleaning, grinding, beveling, and operating oxy-acetylene torches and angle grinders with high precision.`,
+      paragraph3_skills_safety: `I prioritize hot-work safety, flash protection, proper ventilation, and fire watch protocols at all times. I inspect welded joints for structural integrity, porosity, and uniformity, ensuring compliance with workshop quality standards.`,
+      paragraph4_eligibility_shifts: `I am ready for immediate visa processing and international relocation to ${countryName}. My passport is valid long-term and all technical credentials and police clearances are verified.`,
+      paragraph5_closing: `Thank you for evaluating my candidature. I would welcome an interview and weld test to prove my technical craftsmanship.`,
+      signOff: 'Respectfully yours,',
+    };
+  }
+
+  if (category === 'electrician') {
+    return {
+      salutation: `Dear Engineering & Maintenance Recruitment in ${countryName},`,
+      paragraph1_intro: `I am pleased to submit my application for the Electrician Assistant / Maintenance Technician position in ${countryName}. I offer solid foundational training in commercial and industrial electrical wiring, cable installation, and preventive maintenance.`,
+      paragraph2_experience: `My practical experience covers conduit routing, cable pulling, termination of distribution boards, socket and lighting installations, multimeter diagnostic testing, and assisting senior electrical engineers with troubleshooting power systems.`,
+      paragraph3_skills_safety: `Electrical safety is my paramount concern. I strictly adhere to Lockout/Tagout (LOTO) protocols, voltage insulation standards, and protective arc-rated PPE. I work systematically and interpret schematic wiring diagrams accurately.`,
+      paragraph4_eligibility_shifts: `I require employer work permit sponsorship (${permitName}) in ${countryName}. I am flexible for facility on-call emergencies, night shift maintenance, and new installations. My passport and documentation are completely verified.`,
+      paragraph5_closing: `I would appreciate the opportunity to discuss my electrical skills with your engineering team. Thank you for your consideration.`,
+      signOff: 'Yours faithfully,',
+    };
+  }
+
+  if (category === 'agriculture') {
+    return {
+      salutation: `Dear Farm & Agriculture Recruitment in ${countryName},`,
+      paragraph1_intro: `I am writing to apply for the Agricultural Worker / Greenhouse Helper role with your farming enterprise in ${countryName}. Coming from an agrarian background, I possess great physical endurance, familiarity with outdoor and greenhouse labor, and respect for crop care.`,
+      paragraph2_experience: `My experience includes planting, weeding, operating irrigation systems, gentle harvesting and grading of fruits and vegetables, weighing and crating produce, and general farm maintenance and fence repair.`,
+      paragraph3_skills_safety: `I work safely around farm machinery, tractor implements, and organic fertilizers. I have great physical resilience in varying weather conditions, working long hours during peak harvest cycles with steady productivity.`,
+      paragraph4_eligibility_shifts: `I hold Indian citizenship and am seeking ${permitName} sponsorship. I am fully available for seasonal or long-term farm contracts, sunrise starts, and extended harvest hours. My passport and health papers are in order.`,
+      paragraph5_closing: `Thank you for considering my application. I look forward to working hard on your farm and contributing to a successful harvest season.`,
+      signOff: 'Sincerely yours,',
+    };
+  }
+
+  if (category === 'retail') {
+    return {
+      salutation: `Dear Retail Store Management in ${countryName},`,
+      paragraph1_intro: `I am writing to apply for the Retail Associate / Supermarket Cashier position with your store in ${countryName}. I bring a polite customer-centric demeanor, rapid checkout scanning skills, and diligent merchandise restocking capabilities.`,
+      paragraph2_experience: `My background includes operating computerized POS cash registers, processing card and cash transactions accurately, replenishing shelves according to FIFO principles, checking expiry dates, and assisting shoppers with product locations.`,
+      paragraph3_skills_safety: `I maintain exceptional store cleanliness, aisle safety, and inventory shrinkage control. I speak communicative English, learn product catalogs quickly, and collaborate cordially with store supervisors and colleagues.`,
+      paragraph4_eligibility_shifts: `I am seeking work permit sponsorship (${permitName}) in ${countryName}. Being single and flexible, I am available for morning, closing, weekend, and holiday retail shifts. My passport and background clearances are complete.`,
+      paragraph5_closing: `Thank you for reviewing my application. I look forward to an interview to demonstrate my customer service dedication.`,
+      signOff: 'Warm regards,',
+    };
+  }
+
+  if (category === 'security') {
+    return {
+      salutation: `Dear Facility Security Management in ${countryName},`,
+      paragraph1_intro: `I am writing to apply for the Security Guard / Facility Watchman position with your organization in ${countryName}. I offer sharp vigilance, disciplined demeanor, and dedicated commitment to protecting client premises, staff, and assets.`,
+      paragraph2_experience: `My background includes controlling entry/exit gates, logging visitor credentials, conducting scheduled foot patrols across perimeter fences and warehouses, monitoring CCTV surveillance screens, and inspecting vehicle cargo compartments.`,
+      paragraph3_skills_safety: `I am trained in basic emergency response, fire extinguisher operation, crowd management, and incident report writing. I maintain a calm, authoritative, yet courteous approach in de-escalating conflicts and ensuring strict adherence to site rules.`,
+      paragraph4_eligibility_shifts: `I require employer work permit sponsorship (${permitName}) in ${countryName}. I am physically fit, alert, and fully accustomed to working 12-hour day or night security shifts. My passport, PCC, and medical clearance are completely prepared.`,
+      paragraph5_closing: `Thank you for evaluating my profile. I look forward to discussing how my vigilance and reliability will safeguard your facility.`,
+      signOff: 'Respectfully yours,',
+    };
+  }
+
+  // Delivery jobs / custom / fallback
+  const customRole = candidate.customJobTitle || candidate.targetJobTitle || 'Professional Operative';
   return {
-    salutation: `Dear Transport & Fleet Recruitment Team in ${countryName},`,
+    salutation: `Dear Hiring Manager / Recruitment Team in ${countryName},`,
     paragraph1_intro: isSingapore
-      ? `I am writing to express my strong interest in the Delivery Associate / Courier Assistant position with your distribution operations in Singapore under the MOM Work Permit sponsorship program. I am energetic, physically agile, and customer-focused, eager to assist with timely parcel delivery across Singapore.`
-      : `I am writing to express my strong interest in the Delivery Associate / Courier Driver Assistant position with your distribution operations in ${countryName}. I am an energetic, physically agile, and customer-focused individual from India who is passionate about timely parcel distribution and smooth fleet operations.`,
-    paragraph2_experience: `I am experienced in package sorting by geographical routes, safe parcel handling, loading delivery vans to optimize drop sequence, and assisting with last-mile deliveries. I take great care to protect customer packages against damage or moisture, double-check addresses and dispatch manifests, and communicate politely with customers during handoffs.`,
-    paragraph3_skills_safety: `I maintain strict standards of road and cargo safety, cargo security, and vehicle cleanliness. I am comfortable with smartphone GPS navigation apps, handheld delivery scanners, and digital signature capture. My strong physical stamina allows me to make rapid stops, climb stairs, and carry parcels up to 25 kg throughout full delivery shifts.`,
+      ? `I am writing with great enthusiasm to formally present my application for the ${customRole} position with your company in Singapore under the Ministry of Manpower (MOM) Work Permit framework. Driven by reliability, high work standards, and strong discipline, I am eager to contribute to your operations.`
+      : `I am writing with great enthusiasm to formally present my application for the ${customRole} position with your company in ${countryName}. Driven by reliability, high work standards, and strong discipline, I am eager to contribute my dedication to your operations under ${permitName} sponsorship.`,
+    paragraph2_experience: `Throughout my career, I have consistently demonstrated a strong practical work ethic, rapid adaptability to new procedures, and dependable performance under demanding workloads. I take immense pride in accuracy, team collaboration, and meeting daily targets consistently.`,
+    paragraph3_skills_safety: `Workplace safety, professional integrity, and strict adherence to company SOPs are my top priorities. I collaborate with utmost respect within multicultural teams, take initiative under minimal supervision, and communicate clearly in English while actively learning essential local terms.`,
     paragraph4_eligibility_shifts: isSingapore
-      ? `As an Indian national, I am eager to obtain the necessary MOM Work Permit with your sponsorship in Singapore. I am single and unmarried, highly punctual, and fully available for early morning dispatch schedules, weekend deliveries, and seasonal volume increases. My passport is in good standing and all necessary background clearance documents are ready.`
-      : `As a non-EU Indian national, I am eager to obtain the necessary work permit (${permitName}) with your sponsorship in ${countryName}. I am single and unmarried, highly punctual, and fully available for early morning dispatch schedules, weekend deliveries, and seasonal volume increases. My passport is in good standing and all necessary background clearance documents are ready.`,
-    paragraph5_closing: isSingapore
-      ? `Thank you for your consideration of my profile. I am eager to bring my enthusiasm, stamina, and reliable service to your delivery team in Singapore, and I look forward to speaking with you soon.`
-      : `Thank you for your consideration of my profile. I am eager to bring my enthusiasm, stamina, and reliable service to your delivery team in ${countryName}, and I hope to speak with you soon in an interview.`,
-    signOff: 'Yours faithfully,',
+      ? `As an Indian citizen seeking employment in Singapore, I am requesting employer sponsorship for a Ministry of Manpower (MOM) Work Permit. Being unmarried with zero relocation hurdles, I have complete personal flexibility for rotating shifts, overtime, and immediate deployment. My passport and PCC documents are ready.`
+      : `As a non-EU Indian citizen, I am seeking an employer-sponsored ${permitName}. Being unmarried with zero relocation hurdles, I can commit 100% of my availability to rotating shifts, overtime, and urgent schedules. My passport, police clearance, and medical fitness certificates are in order for immediate filing.`,
+    paragraph5_closing: `I am prepared to travel and commence work in ${countryName} immediately upon visa issuance. Thank you for your valuable time and consideration of my application. I would welcome an interview at your convenience.`,
+    signOff: 'Yours sincerely,',
   };
 }
 
@@ -804,6 +1005,62 @@ export function generateCvContent(
     exp1Role = 'Delivery & Route Dispatch Associate';
     exp2Role = 'Parcel Sorter & Van Loading Assistant';
     exp3Role = 'Distribution Depot & Courier Assistant';
+  } else if (category === 'driver') {
+    roleTitle = 'Forklift Operator / Heavy Equipment & Driver';
+    exp1Role = 'Lead Counterbalance & Reach Truck Operator';
+    exp2Role = 'Forklift Driver & Cargo Stager';
+    exp3Role = 'Loading Bay Equipment Operator';
+  } else if (category === 'construction') {
+    roleTitle = 'Construction Worker / Scaffolder & Mason Helper';
+    exp1Role = 'Senior Construction Laborer & Scaffolder';
+    exp2Role = 'Masonry & Concrete Staging Worker';
+    exp3Role = 'Site Preparation & Civil Works Helper';
+  } else if (category === 'cleaning') {
+    roleTitle = 'Commercial Cleaner / Facility Housekeeping Staff';
+    exp1Role = 'Senior Facility & Industrial Cleaning Operative';
+    exp2Role = 'Commercial Sanitization & Floor Attendant';
+    exp3Role = 'Housekeeping & Waste Management Helper';
+  } else if (category === 'hospitality') {
+    roleTitle = 'Kitchen Helper / Dishwasher & Food Prep Assistant';
+    exp1Role = 'Commercial Kitchen Helper & Food Prepper';
+    exp2Role = 'Kitchen Steward & Dishwashing Operative';
+    exp3Role = 'Food Staging & Dining Support Staff';
+  } else if (category === 'manufacturing') {
+    roleTitle = 'Factory Assembler / Production Line Operative';
+    exp1Role = 'Senior Production Line Assembly Operative';
+    exp2Role = 'Packaging & Machinery Tending Worker';
+    exp3Role = 'Quality Inspection & Staging Helper';
+  } else if (category === 'welder') {
+    roleTitle = 'Welder / Metal Fabricator & Fitter Assistant';
+    exp1Role = 'MIG / TIG / ARC Welder & Fabricator';
+    exp2Role = 'Structural Steel & Grinding Worker';
+    exp3Role = 'Workshop Assembly & Metal Fitter Assistant';
+  } else if (category === 'electrician') {
+    roleTitle = 'Electrician Assistant / Maintenance Technician';
+    exp1Role = 'Electrical Maintenance & Cable Installation Worker';
+    exp2Role = 'Conduit & Distribution Board Assistant';
+    exp3Role = 'Facility Electrical Helper';
+  } else if (category === 'agriculture') {
+    roleTitle = 'Agricultural Worker / Greenhouse & Farm Helper';
+    exp1Role = 'Senior Greenhouse & Harvest Specialist';
+    exp2Role = 'Fruit & Vegetable Grading Worker';
+    exp3Role = 'Nursery & Farm Maintenance Helper';
+  } else if (category === 'retail') {
+    roleTitle = 'Supermarket Cashier / Store Stocker & Retail Associate';
+    exp1Role = 'Senior POS Cashier & Retail Associate';
+    exp2Role = 'Supermarket Shelf Replenisher & Merchandiser';
+    exp3Role = 'Store Inventory & Goods Receiving Clerk';
+  } else if (category === 'security') {
+    roleTitle = 'Security Guard / Facility & Gate Watchman';
+    exp1Role = 'Senior Access Control & Security Officer';
+    exp2Role = 'Facility Watchman & Perimeter Patrol Guard';
+    exp3Role = 'Visitor Screening & Gate Security Attendant';
+  } else if (category === 'custom') {
+    const custom = candidate.customJobTitle || candidate.targetJobTitle || 'Professional Specialist';
+    roleTitle = custom;
+    exp1Role = `Senior ${custom}`;
+    exp2Role = `${custom} Specialist`;
+    exp3Role = `${custom} Associate`;
   }
 
   const isGulf = countryData.region === 'Gulf';
@@ -972,6 +1229,80 @@ export function generateCvContent(
     indianDeclaration:
       'I hereby declare that all the information stated above is true, complete, and correct to the best of my knowledge and belief. I take full responsibility for the correctness of the particulars.',
     references: 'Professional references from former warehouse supervisors and logistics operations managers available immediately upon request.',
+
+    // Multi-page CV configuration (2 to 5 pages)
+    pageCount: 2,
+    projects: [
+      {
+        id: 'proj-1',
+        title: 'High-Volume Freight Cross-Docking & Logistics Consolidation',
+        clientOrFacility: 'Apex Regional Distribution Gateway Terminal',
+        duration: '2022 – 2024',
+        highlights: [
+          'Facilitated the physical sorting and dispatch staging of over 14,000 pallets with zero transit defect complaints.',
+          'Supervised manual handling ergonomics and monitored 100% adherence to steel-toe footwear and high-vis attire.',
+          'Commended by Terminal Operations Supervisor for punctuality, handling high-priority consignments, and rapid offloading.',
+        ],
+      },
+      {
+        id: 'proj-2',
+        title: 'RF Barcode Inventory Digitization & Bin Relocation Initiative',
+        clientOrFacility: 'Metro Central Wholesale & Fulfillment Center',
+        duration: '2020 – 2021',
+        highlights: [
+          'Assisted operational engineers in bin labeling and QR location tracking across 40,000 sq. ft. of high-rack storage.',
+          'Conducted daily cycle counts and stock segregation, achieving 99.8% physical inventory verification accuracy.',
+          'Trained 12 new contract helpers on handheld terminal operation and proper box stacking geometry.',
+        ],
+      },
+      {
+        id: 'proj-3',
+        title: 'Annual Seasonal Rush & Maritime Container Devanning Project',
+        clientOrFacility: 'SwiftCargo Logistics Port Depot',
+        duration: '2018 – 2019',
+        highlights: [
+          'Directly offloaded and sorted over 80 high-cube 40ft sea shipping containers during peak holiday quarters.',
+          'Consistently met demanding 2-hour container turnaround targets without freight damage or safety violations.',
+          'Earned Depot Safety Commendation for reporting zero lost-time injuries (LTI) across 18 months.',
+        ],
+      },
+    ],
+    deployments: [
+      {
+        id: 'dep-1',
+        location: 'Inland Container Freight Depot (ICD Terminal Corridor)',
+        role: 'Senior Cargo Staging & Container Devanning Operative',
+        duration: '2022 – Present',
+        details: 'Assigned to heavy container devanning, cargo inspection support, and pallet shrink-wrap staging for long-distance transport fleets.',
+      },
+      {
+        id: 'dep-2',
+        location: 'Industrial E-Commerce Order Fulfillment Center',
+        role: 'Lead Picker & High-Speed Stower',
+        duration: '2019 – 2022',
+        details: 'Spearheaded batch order picking and express dispatch preparation across high-density mezzanine storage systems.',
+      },
+      {
+        id: 'dep-3',
+        location: 'Wholesale Food & Fast-Moving Consumer Goods (FMCG) Depot',
+        role: 'Material Handling Helper & Stock Assistant',
+        duration: '2017 – 2019',
+        details: 'Managed temperature-controlled storage transfers, manual stock rotation (FIFO), and pallet loading onto refrigerated transport vehicles.',
+      },
+    ],
+    vocationalTrainings: [
+      'Certified Material Handling & Ergonomic Manual Lifting Practice (OSHA / ISO 45001 Standards Aligned)',
+      'Occupational Health, Personal Protective Equipment (PPE) & High-Visibility Protocols',
+      'Industrial Fire Safety Prevention, Extinguisher Operation & Emergency Facility Evacuation',
+      'Continuous 5S Visual Housekeeping & Workplace Hazard Identification Training',
+      'Basic First Aid & Incident Reporting in Industrial Logistics Environments',
+    ],
+    safetyProtocols: [
+      'Physical Endurance & Shift Stamina: Fully accustomed to 8- to 12-hour continuous standing and active walking shifts.',
+      'Safe Lifting Technique: Trained in bend-knees back-straight posture, mechanical assistance, and lifting loads up to 25 kg safely.',
+      'Machinery & Pedestrian Separation: Strict compliance with designated pedestrian walkways, crossing eyes, and forklift exclusion corridors.',
+      'Substance & Distraction Free: 100% adherence to zero-tolerance policies regarding mobile phone use, alcohol, and prohibited substances on warehouse floors.',
+    ],
   };
 }
 

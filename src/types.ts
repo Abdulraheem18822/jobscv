@@ -57,7 +57,28 @@ export type JobCategory =
   | 'helper'
   | 'fulfillment'
   | 'logistics'
-  | 'delivery';
+  | 'delivery'
+  | 'driver'
+  | 'construction'
+  | 'cleaning'
+  | 'hospitality'
+  | 'manufacturing'
+  | 'welder'
+  | 'electrician'
+  | 'agriculture'
+  | 'retail'
+  | 'security'
+  | 'custom';
+
+export type DocumentTheme =
+  | 'classic_amber'
+  | 'modern_navy'
+  | 'emerald_gcc'
+  | 'monochrome'
+  | 'burgundy'
+  | 'nordic_slate';
+
+export type CvPageCount = 2 | 3 | 4 | 5;
 
 export type DocumentType = 'cover_letter' | 'cv';
 
@@ -80,10 +101,11 @@ export interface CandidateDetails {
   currentAddress: string;
   cityCountry: string;
 
-  // Additional style-specific profile details
+  // Additional style & visual customization
   fatherName?: string;
   religion?: string;
   cvStyle?: CvStyle;
+  theme?: DocumentTheme;
   gulfVisaStatus?: string;
   hasGulfLicense?: boolean;
   gulfLicenseDetails?: string;
@@ -98,6 +120,7 @@ export interface CandidateDetails {
   customCountryName?: string;
   jobCategory: JobCategory;
   targetJobTitle: string;
+  customJobTitle?: string;
   targetCompany: string;
   targetCity: string;
   languages: string;
@@ -151,8 +174,25 @@ export interface LanguageItem {
   levelBadge: string;
 }
 
+export interface CvProjectItem {
+  id: string;
+  title: string;
+  clientOrFacility: string;
+  duration: string;
+  highlights: string[];
+}
+
+export interface CvDeploymentItem {
+  id: string;
+  location: string;
+  role: string;
+  duration: string;
+  details: string;
+}
+
 export interface CvContent {
   style?: CvStyle;
+  pageCount?: CvPageCount;
   headline: string;
   professionalSummary: string;
   photoUrl?: string;
@@ -174,6 +214,11 @@ export interface CvContent {
   gulfDeclaration?: string;
   // Indian style specific declaration
   indianDeclaration?: string;
+  // Extra pages content for 3, 4, and 5-page CVs
+  projects?: CvProjectItem[];
+  deployments?: CvDeploymentItem[];
+  vocationalTrainings?: string[];
+  safetyProtocols?: string[];
 }
 
 export interface CountryInfo {

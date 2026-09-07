@@ -138,10 +138,10 @@ export default function App() {
     });
   };
 
-  // Handle Job Category Change
-  const handleJobCategoryChange = (category: JobCategory) => {
+  // Handle Job Category Change (Supports Predefined & Custom Manual Job Titles)
+  const handleJobCategoryChange = (category: JobCategory, customTitle?: string) => {
     const jobItem = JOB_CATEGORIES.find((j) => j.id === category);
-    const newTitle = jobItem ? jobItem.defaultTitle : 'Warehouse Operative';
+    const newTitle = customTitle?.trim() || (jobItem ? jobItem.defaultTitle : 'Warehouse Operative');
     const updatedDetails: CandidateDetails = {
       ...details,
       jobCategory: category,
@@ -160,6 +160,10 @@ export default function App() {
         experiences: freshCv.experiences,
         operationalSkills: freshCv.operationalSkills,
         professionalSummary: freshCv.professionalSummary,
+        projects: freshCv.projects,
+        deployments: freshCv.deployments,
+        vocationalTrainings: freshCv.vocationalTrainings,
+        safetyProtocols: freshCv.safetyProtocols,
       };
     });
   };
@@ -343,6 +347,7 @@ Indian Citizen • Passport: ${details.passport.passportNumber}
       {/* Top Application Bar with Mode Switcher & PDF triggers */}
       <Header
         details={details}
+        cv={cv}
         mode={mode}
         onModeChange={(m) => {
           setMode(m);
@@ -361,6 +366,10 @@ Indian Citizen • Passport: ${details.passport.passportNumber}
         copied={copied}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        onJobCategoryChange={handleJobCategoryChange}
+        onThemeChange={(theme) => handleDetailsChange({ theme })}
+        onCvPageCountChange={(count) => handleCvChange({ pageCount: count })}
+        onCountryChange={handleCountryChange}
       />
 
       {/* Main Content Area */}
@@ -525,6 +534,9 @@ Indian Citizen • Passport: ${details.passport.passportNumber}
                 onJobCategoryChange={handleJobCategoryChange}
                 onNavigateToLetterView={handleNavigateToLetterView}
                 onNavigateToCvView={handleNavigateToCvView}
+                pageCount={cv.pageCount || 2}
+                onPageCountChange={(count) => handleCvChange({ pageCount: count })}
+                onThemeChange={(theme) => handleDetailsChange({ theme })}
               />
             )}
 

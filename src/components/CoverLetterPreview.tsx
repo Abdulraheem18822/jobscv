@@ -18,6 +18,8 @@ import {
   Loader2,
   User,
   CheckCircle2,
+  X,
+  Eye,
 } from 'lucide-react';
 import { exportCoverLetterToPdf, generateVectorPdf } from '../utils/pdfExport';
 
@@ -46,6 +48,9 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
 }) => {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfSuccess, setPdfSuccess] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [modalTab, setModalTab] = useState<'paragraphs' | 'recipient' | 'candidate'>('paragraphs');
+  const [highlightMode, setHighlightMode] = useState(true);
 
   const handleDownloadPdf = async () => {
     try {
@@ -102,15 +107,27 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            {/* Direct Edit Letter Button */}
+            {/* Quick Edit Modal Button */}
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              title="Open full editor modal to modify paragraphs, salutation, and company"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-white" />
+              <span>Quick Edit Letter (Modal)</span>
+            </button>
+
+            {/* Direct Edit Letter Button (Sidebar) */}
             {onEditLetter && (
               <button
                 type="button"
                 onClick={onEditLetter}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Open sidebar editor"
               >
-                <Edit3 className="w-3.5 h-3.5 text-amber-700" />
-                <span>Edit Letter Content</span>
+                <FileText className="w-3.5 h-3.5 text-amber-700" />
+                <span>Sidebar Form</span>
               </button>
             )}
 
@@ -122,9 +139,24 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <User className="w-3.5 h-3.5 text-stone-600" />
-                <span>Edit Details & Country</span>
+                <span>Edit Details</span>
               </button>
             )}
+
+            {/* Toggle Highlight Guides */}
+            <button
+              type="button"
+              onClick={() => setHighlightMode(!highlightMode)}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1 cursor-pointer ${
+                highlightMode
+                  ? 'bg-blue-50 text-blue-800 border-blue-200'
+                  : 'bg-stone-50 text-stone-600 border-stone-200'
+              }`}
+              title="Toggle dashed edit borders on letter text"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>{highlightMode ? 'Edit Guides: On' : 'Edit Guides: Off'}</span>
+            </button>
 
             {/* Direct Download PDF Button */}
             <button
@@ -534,6 +566,330 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
           </div>
         )}
       </div>
+
+      {/* Quick Edit Modal Dialog */}
+      {isEditModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-print"
+        >
+          <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="px-5 py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50/80">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-700 flex items-center justify-center border border-amber-300/40">
+                  <Edit3 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-stone-900">
+                    Quick Edit Cover Letter
+                  </h3>
+                  <p className="text-xs text-stone-500">
+                    Edit letter text, recipient company, and candidate details directly
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="w-8 h-8 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/60 flex items-center justify-center transition-colors cursor-pointer"
+                title="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Navigation Tabs */}
+            <div className="px-5 pt-3 bg-stone-50/50 border-b border-stone-200 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setModalTab('paragraphs')}
+                className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
+                  modalTab === 'paragraphs'
+                    ? 'border-amber-600 text-amber-900'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Letter Body (5 Paragraphs)
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('recipient')}
+                className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
+                  modalTab === 'recipient'
+                    ? 'border-amber-600 text-amber-900'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Job Title & Recipient
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('candidate')}
+                className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
+                  modalTab === 'candidate'
+                    ? 'border-amber-600 text-amber-900'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Candidate Information
+              </button>
+            </div>
+
+            {/* Modal Scrollable Body */}
+            <div className="p-5 overflow-y-auto space-y-4 flex-1">
+              {modalTab === 'paragraphs' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Salutation:
+                    </label>
+                    <input
+                      type="text"
+                      value={content.salutation}
+                      onChange={(e) => onContentChange({ salutation: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      placeholder="Dear Hiring Manager..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Paragraph 1 — Opening & Motivation:
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={content.paragraph1_intro}
+                      onChange={(e) => onContentChange({ paragraph1_intro: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Paragraph 2 — Physical Stamina & Daily Labor Duties:
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={content.paragraph2_experience}
+                      onChange={(e) => onContentChange({ paragraph2_experience: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Paragraph 3 — Workplace Safety & PPE Standards:
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={content.paragraph3_skills_safety}
+                      onChange={(e) => onContentChange({ paragraph3_skills_safety: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Paragraph 4 — Work Permit Eligibility & Shift Flexibility:
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={content.paragraph4_eligibility_shifts}
+                      onChange={(e) => onContentChange({ paragraph4_eligibility_shifts: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Paragraph 5 — Closing & Immediate Relocation:
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={content.paragraph5_closing}
+                      onChange={(e) => onContentChange({ paragraph5_closing: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Sign-Off:
+                    </label>
+                    <input
+                      type="text"
+                      value={content.signOff}
+                      onChange={(e) => onContentChange({ signOff: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      placeholder="Yours sincerely,"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {modalTab === 'recipient' && (
+                <div className="space-y-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Target Job Title:
+                    </label>
+                    <input
+                      type="text"
+                      value={details.targetJobTitle}
+                      onChange={(e) => onDetailsChange({ targetJobTitle: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      placeholder="e.g. Warehouse Worker & Order Picker"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-800 mb-1">
+                      Target Company Name:
+                    </label>
+                    <input
+                      type="text"
+                      value={details.targetCompany}
+                      onChange={(e) => onDetailsChange({ targetCompany: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      placeholder="e.g. Logistics Recruitment Team"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Target City:
+                      </label>
+                      <input
+                        type="text"
+                        value={details.targetCity}
+                        onChange={(e) => onDetailsChange({ targetCity: e.target.value })}
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                        placeholder="e.g. Warsaw, Berlin, Dubai"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Application Date:
+                      </label>
+                      <input
+                        type="text"
+                        value={details.date}
+                        onChange={(e) => onDetailsChange({ date: e.target.value })}
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {modalTab === 'candidate' && (
+                <div className="space-y-3.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Candidate Full Name:
+                      </label>
+                      <input
+                        type="text"
+                        value={details.fullName}
+                        onChange={(e) => onDetailsChange({ fullName: e.target.value })}
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white font-medium"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Nationality:
+                      </label>
+                      <input
+                        type="text"
+                        value={details.nationality}
+                        onChange={(e) => onDetailsChange({ nationality: e.target.value })}
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Email Address:
+                      </label>
+                      <input
+                        type="email"
+                        value={details.email}
+                        onChange={(e) => onDetailsChange({ email: e.target.value })}
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Phone Number:
+                      </label>
+                      <input
+                        type="text"
+                        value={details.phone}
+                        onChange={(e) => onDetailsChange({ phone: e.target.value })}
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Current City / Country:
+                      </label>
+                      <input
+                        type="text"
+                        value={details.cityCountry}
+                        onChange={(e) => onDetailsChange({ cityCountry: e.target.value })}
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-stone-800 mb-1">
+                        Passport Number:
+                      </label>
+                      <input
+                        type="text"
+                        value={details.passport.passportNumber}
+                        onChange={(e) =>
+                          onDetailsChange({
+                            passport: { ...details.passport, passportNumber: e.target.value },
+                          })
+                        }
+                        className="w-full text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white font-mono"
+                        placeholder="e.g. V9876543"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-5 py-3.5 border-t border-stone-200 bg-stone-50 flex items-center justify-between gap-3">
+              <span className="text-xs text-stone-500">
+                Changes apply instantly to live preview & PDF
+              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 rounded-lg text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-colors cursor-pointer"
+                >
+                  Done & View Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

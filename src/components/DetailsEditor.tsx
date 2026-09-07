@@ -19,16 +19,20 @@ import {
   Building,
   Flag,
 } from 'lucide-react';
-import { CandidateDetails, JobCategory, TargetCountry, CvStyle } from '../types';
+import { CandidateDetails, JobCategory, TargetCountry, CvStyle, CvPageCount, DocumentTheme } from '../types';
 import { COUNTRIES_DATA, JOB_CATEGORIES } from '../data/internationalJobData';
+import { DOCUMENT_THEMES } from '../data/themes';
 
 interface DetailsEditorProps {
   details: CandidateDetails;
   onChange: (updated: Partial<CandidateDetails>) => void;
   onCountryChange: (country: TargetCountry) => void;
-  onJobCategoryChange: (category: JobCategory) => void;
+  onJobCategoryChange: (category: JobCategory, customTitle?: string) => void;
   onNavigateToLetterView: () => void;
   onNavigateToCvView?: () => void;
+  pageCount?: CvPageCount;
+  onPageCountChange?: (pages: CvPageCount) => void;
+  onThemeChange?: (theme: DocumentTheme) => void;
 }
 
 export const DetailsEditor: React.FC<DetailsEditorProps> = ({
@@ -38,9 +42,14 @@ export const DetailsEditor: React.FC<DetailsEditorProps> = ({
   onJobCategoryChange,
   onNavigateToLetterView,
   onNavigateToCvView,
+  pageCount = 2,
+  onPageCountChange,
+  onThemeChange,
 }) => {
   const [countryFilter, setCountryFilter] = useState<'all' | 'schengen' | 'gulf' | 'global'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [jobSearchQuery, setJobSearchQuery] = useState('');
+  const [customJobInput, setCustomJobInput] = useState('');
 
   const currentCountryInfo = COUNTRIES_DATA[details.targetCountry] || COUNTRIES_DATA.Other;
 
@@ -328,25 +337,96 @@ export const DetailsEditor: React.FC<DetailsEditorProps> = ({
         </div>
       </div>
 
-      {/* 3. Target Job Category Selection */}
-      <div className="bg-white rounded-xl p-4 sm:p-5 border border-stone-200 shadow-2xs">
-        <div className="flex items-center justify-between mb-3">
+      {/* 3. Target Job Category Selection (Full List & Custom Manual Entry) */}
+      <div className="bg-white rounded-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
             <Briefcase className="w-3.5 h-3.5 text-amber-600" />
-            <span>Select Target Job Category</span>
+            <span>Target Job Category & Custom Profession</span>
           </label>
-          <span className="text-[11px] text-stone-500">5 Categories</span>
+          <span className="text-[11px] text-stone-500 font-medium">
+            {JOB_CATEGORIES.length} Categories + Manual Input
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {JOB_CATEGORIES.map((job) => {
+        {/* Manual Custom Job Input Card */}
+        <div className="p-3 bg-amber-50/70 border border-amber-300/80 rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+              <span>Add Custom Job / Profession Manually:</span>
+            </span>
+            <span className="text-[10px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded">
+              Any Profession Supported
+            </span>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={customJobInput}
+              onChange={(e) => setCustomJobInput(e.target.value)}
+              placeholder="e.g. Amazon Fulfillment Associate, HVAC Technician, Scaffolder, Barista..."
+              className="flex-1 text-xs px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-stone-900 font-medium"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (customJobInput.trim()) {
+                    onJobCategoryChange('custom', customJobInput.trim());
+                    setCustomJobInput('');
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (customJobInput.trim()) {
+                  onJobCategoryChange('custom', customJobInput.trim());
+                  setCustomJobInput('');
+                }
+              }}
+              className="px-3.5 py-2 rounded-lg text-xs font-bold bg-amber-700 hover:bg-amber-800 text-white shadow-2xs transition-colors shrink-0 cursor-pointer"
+            >
+              Apply Job
+            </button>
+          </div>
+          <p className="text-[10px] text-amber-800/80 leading-tight">
+            Currently targeting:{' '}
+            <strong className="text-amber-950 underline">{details.targetJobTitle}</strong>.
+            Typing any profession here customizes both your CV and Cover Letter.
+          </p>
+        </div>
+
+        {/* Category Search Filter */}
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-2.5" />
+          <input
+            type="text"
+            value={jobSearchQuery}
+            onChange={(e) => setJobSearchQuery(e.target.value)}
+            placeholder="Search all job categories (e.g. driver, construction, helper, warehouse)..."
+            className="w-full text-xs pl-8 pr-3 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-stone-50"
+          />
+        </div>
+
+        {/* Job Categories Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
+          {JOB_CATEGORIES.filter((job) => {
+            if (!jobSearchQuery.trim()) return true;
+            const q = jobSearchQuery.toLowerCase();
+            return (
+              job.name.toLowerCase().includes(q) ||
+              job.description.toLowerCase().includes(q) ||
+              job.badge.toLowerCase().includes(q)
+            );
+          }).map((job) => {
             const isSelected = details.jobCategory === job.id;
             return (
               <button
                 key={job.id}
                 type="button"
                 onClick={() => onJobCategoryChange(job.id)}
-                className={`p-3 rounded-lg border text-left transition-all cursor-pointer ${
+                className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   isSelected
                     ? 'border-amber-600 bg-amber-50/80 ring-1 ring-amber-600 shadow-xs'
                     : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
@@ -364,7 +444,108 @@ export const DetailsEditor: React.FC<DetailsEditorProps> = ({
                     {job.badge}
                   </span>
                 </div>
-                <p className="text-[11px] text-stone-500 mt-1 leading-snug">{job.description}</p>
+                <p className="text-[10px] text-stone-500 mt-1 leading-tight">{job.description}</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3b. Free Document Themes (6 Free Themes) */}
+      <div className="bg-white rounded-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <span>Free Document Themes (CV & Cover Letter)</span>
+          </label>
+          <span className="text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full">
+            6 Free Themes
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {Object.values(DOCUMENT_THEMES).map((theme) => {
+            const isSelected = (details.theme || 'classic_amber') === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                onClick={() => onThemeChange && onThemeChange(theme.id)}
+                className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? 'border-stone-900 bg-stone-50 ring-2 ring-stone-900 shadow-xs'
+                    : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/60'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 shadow-2xs"
+                      style={{ backgroundColor: theme.swatchHex }}
+                    />
+                    <span className="text-xs font-bold text-stone-900 truncate">
+                      {theme.name}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-stone-500 line-clamp-2 leading-snug">
+                    {theme.subtitle}
+                  </p>
+                </div>
+                {isSelected && (
+                  <span className="mt-2 inline-flex items-center gap-1 text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded self-start border border-emerald-200">
+                    <CheckCircle2 className="w-2.5 h-2.5" />
+                    Active Theme
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3c. CV Length & Page Count (2 to 5 Pages) */}
+      <div className="bg-white rounded-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-amber-600" />
+            <span>CV Document Length (Pages)</span>
+          </label>
+          <span className="text-[10px] text-stone-500 font-medium">
+            Cover Letter = 1 Page Fixed
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {([2, 3, 4, 5] as CvPageCount[]).map((pages) => {
+            const isSelected = pageCount === pages;
+            const descriptions: Record<CvPageCount, string> = {
+              2: 'Standard Europass Core Format',
+              3: 'Includes Industrial Projects & Audits',
+              4: 'Includes Multi-Facility Hubs & Hazmat',
+              5: 'Master Dossier & Notarized Affidavit',
+            };
+            return (
+              <button
+                key={pages}
+                type="button"
+                onClick={() => onPageCountChange && onPageCountChange(pages)}
+                className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                  isSelected
+                    ? 'border-amber-600 bg-amber-50 ring-1 ring-amber-600 shadow-xs'
+                    : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold ${isSelected ? 'text-amber-950' : 'text-stone-900'}`}>
+                    {pages} Pages
+                  </span>
+                  {isSelected && (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                  )}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-0.5 leading-snug">
+                  {descriptions[pages]}
+                </p>
               </button>
             );
           })}
