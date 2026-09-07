@@ -1,0 +1,6 @@
+{
+  "name": "International Job Cover Letter Builder",
+  "description": "Create, customize, and download professional 2-page European CVs (Curriculum Vitae) with white-background photo and PDF cover letters for Warehouse, Logistics, Helper, Fulfillment, and Delivery jobs across Singapore, Poland, Turkey, Greece, Romania, Czech Republic, and European countries for Indian and international job seekers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
