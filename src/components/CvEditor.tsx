@@ -20,7 +20,7 @@ import {
   Wrench,
   UserCheck,
 } from 'lucide-react';
-import { CandidateDetails, CvContent, JobCategory, TargetCountry, WorkExperience, EducationItem, LanguageItem } from '../types';
+import { CandidateDetails, CvContent, JobCategory, TargetCountry, WorkExperience, EducationItem, LanguageItem, CvStyle } from '../types';
 import { generateCvContent } from '../data/internationalJobData';
 import { DEFAULT_PASSPORT_PHOTO } from '../utils/defaultPhoto';
 
@@ -28,6 +28,7 @@ interface CvEditorProps {
   details: CandidateDetails;
   cv: CvContent;
   onChange: (updatedCv: Partial<CvContent>) => void;
+  onUpdateDetails?: (updatedDetails: Partial<CandidateDetails>) => void;
   onResetCv: () => void;
   onNavigateToPreview: () => void;
 }
@@ -36,11 +37,14 @@ export const CvEditor: React.FC<CvEditorProps> = ({
   details,
   cv,
   onChange,
+  onUpdateDetails,
   onResetCv,
   onNavigateToPreview,
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'experience' | 'skills' | 'education' | 'languages'>('profile');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const activeStyle: CvStyle = details.cvStyle || cv.style || 'european';
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,6 +64,13 @@ export const CvEditor: React.FC<CvEditorProps> = ({
   };
 
   const photoSource = cv.photoUrl || DEFAULT_PASSPORT_PHOTO;
+
+  const handleSetCvStyle = (style: CvStyle) => {
+    onChange({ style });
+    if (onUpdateDetails) {
+      onUpdateDetails({ cvStyle: style });
+    }
+  };
 
   // Helper for experience
   const handleUpdateExperience = (index: number, updated: Partial<WorkExperience>) => {
@@ -138,8 +149,8 @@ export const CvEditor: React.FC<CvEditorProps> = ({
             <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide">
               Customize Curriculum Vitae (CV)
             </h2>
-            <span className="text-[11px] bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 rounded border border-amber-200">
-              European Standard
+            <span className="text-[11px] bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 rounded border border-amber-200 uppercase">
+              {activeStyle} Style
             </span>
           </div>
           <p className="text-xs text-stone-500 mt-0.5">
@@ -151,7 +162,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
           <button
             type="button"
             onClick={onResetCv}
-            className="px-3 py-1.5 text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg border border-stone-200 font-medium flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg border border-stone-200 font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
             <span>Reset Defaults</span>
@@ -160,10 +171,57 @@ export const CvEditor: React.FC<CvEditorProps> = ({
           <button
             type="button"
             onClick={onNavigateToPreview}
-            className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white text-xs font-semibold rounded-lg shadow-2xs flex items-center gap-1.5 transition-colors"
+            className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white text-xs font-semibold rounded-lg shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Eye className="w-3.5 h-3.5" />
             <span>View CV Document</span>
+          </button>
+        </div>
+      </div>
+
+      {/* CV Style Format Selector */}
+      <div className="bg-white rounded-xl p-4 border border-stone-200 shadow-2xs">
+        <label className="block text-xs font-semibold text-stone-700 mb-2">
+          Choose CV Style Format:
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={() => handleSetCvStyle('european')}
+            className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              activeStyle === 'european'
+                ? 'border-amber-600 bg-amber-50 text-amber-950 ring-1 ring-amber-600 shadow-2xs'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+            }`}
+          >
+            <span>🇪🇺</span>
+            <span>European Style (Europass)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSetCvStyle('gulf')}
+            className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              activeStyle === 'gulf'
+                ? 'border-emerald-600 bg-emerald-50 text-emerald-950 ring-1 ring-emerald-600 shadow-2xs'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+            }`}
+          >
+            <span>🇦🇪</span>
+            <span>Gulf Style (GCC)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSetCvStyle('indian')}
+            className={`p-2.5 rounded-lg border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              activeStyle === 'indian'
+                ? 'border-blue-600 bg-blue-50 text-blue-950 ring-1 ring-blue-600 shadow-2xs'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+            }`}
+          >
+            <span>🇮🇳</span>
+            <span>Indian Corporate Style</span>
           </button>
         </div>
       </div>
@@ -173,7 +231,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('profile')}
-          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 ${
+          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'profile'
               ? 'border-amber-600 text-amber-900 font-bold bg-amber-50/50'
               : 'border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-50'
@@ -186,7 +244,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('experience')}
-          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 ${
+          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'experience'
               ? 'border-amber-600 text-amber-900 font-bold bg-amber-50/50'
               : 'border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-50'
@@ -199,7 +257,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('skills')}
-          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 ${
+          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'skills'
               ? 'border-amber-600 text-amber-900 font-bold bg-amber-50/50'
               : 'border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-50'
@@ -212,7 +270,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('education')}
-          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 ${
+          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'education'
               ? 'border-amber-600 text-amber-900 font-bold bg-amber-50/50'
               : 'border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-50'
@@ -225,7 +283,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('languages')}
-          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 ${
+          className={`px-3.5 py-2.5 rounded-t-lg transition-colors border-b-2 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'languages'
               ? 'border-amber-600 text-amber-900 font-bold bg-amber-50/50'
               : 'border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-50'
@@ -239,7 +297,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
       {/* Tab 1: Profile & Summary */}
       {activeTab === 'profile' && (
         <div className="bg-white rounded-b-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-4">
-          {/* European Standard Passport Photo Section */}
+          {/* Passport Photo Section */}
           <div className="p-3.5 bg-stone-50 rounded-lg border border-stone-200">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -259,7 +317,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-stone-900">White Background Passport Photo</span>
                     <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-1.5 py-0.5 rounded">
-                      EU / Singapore Spec
+                      Standard Spec
                     </span>
                   </div>
                   <p className="text-[11px] text-stone-500 mt-0.5">
@@ -279,7 +337,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-2.5 py-1.5 bg-white hover:bg-stone-100 text-stone-800 rounded border border-stone-300 text-xs font-semibold shadow-2xs flex items-center gap-1 transition-colors"
+                  className="px-2.5 py-1.5 bg-white hover:bg-stone-100 text-stone-800 rounded border border-stone-300 text-xs font-semibold shadow-2xs flex items-center gap-1 transition-colors cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5 text-amber-700" />
                   <span>Upload Photo</span>
@@ -293,7 +351,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                       photoWhiteBackground: true,
                     })
                   }
-                  className="px-2.5 py-1.5 bg-white hover:bg-stone-100 text-stone-700 rounded border border-stone-300 text-xs font-medium transition-colors"
+                  className="px-2.5 py-1.5 bg-white hover:bg-stone-100 text-stone-700 rounded border border-stone-300 text-xs font-medium transition-colors cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-600 inline mr-1" />
                   Default White BG
@@ -309,7 +367,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                   onChange={(e) => onChange({ showPhoto: e.target.checked })}
                   className="rounded border-stone-300 text-amber-600 focus:ring-amber-500"
                 />
-                <span className="text-stone-700 font-medium">Display Photo on European CV</span>
+                <span className="text-stone-700 font-medium">Display Photo on CV</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -331,15 +389,15 @@ export const CvEditor: React.FC<CvEditorProps> = ({
               type="text"
               value={cv.headline}
               onChange={(e) => onChange({ headline: e.target.value })}
-              className="w-full text-xs font-semibold p-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-              placeholder="e.g. Warehouse Worker & Material Handler | Poland Work Permit Applicant"
+              className="w-full text-xs font-semibold p-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-stone-900"
+              placeholder="e.g. Warehouse Worker & Material Handler | Work Permit Applicant"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-xs font-semibold text-stone-700">
-                Professional Summary & International Relocation Statement
+                Professional Summary & Career Objective
               </label>
               <span className="text-[11px] text-stone-500">Highlight stamina & document readiness</span>
             </div>
@@ -347,83 +405,21 @@ export const CvEditor: React.FC<CvEditorProps> = ({
               rows={6}
               value={cv.professionalSummary}
               onChange={(e) => onChange({ professionalSummary: e.target.value })}
-              className="w-full text-xs p-3 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 leading-relaxed font-sans"
-              placeholder="Detail your experience in manual handling, physical endurance, shift flexibility, and readiness for work permit filing..."
+              className="w-full text-xs p-3 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 leading-relaxed font-sans text-stone-900"
             />
           </div>
 
-          {/* Document Options */}
-          <div className="pt-2 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="flex items-center gap-2 p-2.5 bg-stone-50 border border-stone-200 rounded-lg cursor-pointer">
-              <input
-                type="checkbox"
-                checked={cv.showPassportBox}
-                onChange={(e) => onChange({ showPassportBox: e.target.checked })}
-                className="rounded border-stone-300 text-amber-600 focus:ring-amber-500"
-              />
-              <div>
-                <span className="text-xs font-semibold text-stone-900 block">
-                  Include Passport & Work Permit Verification Box
-                </span>
-                <span className="text-[11px] text-stone-500">
-                  Highly recommended for Non-EU applicants to show genuine embassy readiness
-                </span>
-              </div>
-            </label>
-
-            <label className="flex items-center gap-2 p-2.5 bg-stone-50 border border-stone-200 rounded-lg cursor-pointer">
-              <input
-                type="checkbox"
-                checked={cv.showReadinessBadges}
-                onChange={(e) => onChange({ showReadinessBadges: e.target.checked })}
-                className="rounded border-stone-300 text-amber-600 focus:ring-amber-500"
-              />
-              <div>
-                <span className="text-xs font-semibold text-stone-900 block">
-                  Show 8-12h Shifts & PCC Ready Badges
-                </span>
-                <span className="text-[11px] text-stone-500">
-                  Highlights your availability for rotational shifts and clean police background
-                </span>
-              </div>
-            </label>
-          </div>
-
+          {/* References Field */}
           <div>
             <label className="block text-xs font-semibold text-stone-700 mb-1">
-              Driving License
+              References
             </label>
             <input
               type="text"
-              value={cv.driverLicense || ''}
-              onChange={(e) => onChange({ driverLicense: e.target.value })}
-              className="w-full text-xs p-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="e.g. Valid Motor Vehicle Driving License (LMV / HMV, Clean Record)"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1">
-              Data Protection & GDPR Clause ({details.targetCountry})
-            </label>
-            <textarea
-              rows={3}
-              value={cv.gdprClause}
-              onChange={(e) => onChange({ gdprClause: e.target.value })}
-              className="w-full text-xs p-2.5 rounded-lg border border-stone-300 font-mono text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1">
-              Professional References (Displayed on Page 2)
-            </label>
-            <textarea
-              rows={2}
               value={cv.references || ''}
               onChange={(e) => onChange({ references: e.target.value })}
-              className="w-full text-xs p-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="e.g. Professional and supervisory references from former warehouse managers and logistics coordinators available immediately upon request."
+              className="w-full text-xs p-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-stone-900"
+              placeholder="Available immediately upon request"
             />
           </div>
         </div>
@@ -431,17 +427,17 @@ export const CvEditor: React.FC<CvEditorProps> = ({
 
       {/* Tab 2: Work Experience */}
       {activeTab === 'experience' && (
-        <div className="bg-white rounded-b-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-6">
+        <div className="bg-white rounded-b-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs text-stone-600 font-medium">
-              List your practical warehousing, material handling, and logistics experience:
+              Add your past jobs and warehouse / industrial responsibilities:
             </span>
             <button
               type="button"
               onClick={handleAddExperience}
-              className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-semibold rounded-lg border border-amber-200 flex items-center gap-1 transition-colors"
+              className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-lg border border-amber-300 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5 text-amber-700" />
               <span>Add Position</span>
             </button>
           </div>
@@ -450,123 +446,122 @@ export const CvEditor: React.FC<CvEditorProps> = ({
             {cv.experiences.map((exp, expIdx) => (
               <div
                 key={exp.id}
-                className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-3"
+                className="p-4 bg-stone-50 border border-stone-200 rounded-xl space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-stone-800 uppercase tracking-wide">
+                <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                  <span className="font-bold text-stone-900 text-xs">
                     Position #{expIdx + 1}
                   </span>
                   {cv.experiences.length > 1 && (
                     <button
                       type="button"
                       onClick={() => handleRemoveExperience(expIdx)}
-                      className="text-stone-400 hover:text-red-600 p-1 rounded transition-colors"
+                      className="text-red-600 hover:text-red-700 text-xs font-medium flex items-center gap-1 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
+                      <span>Remove</span>
                     </button>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
-                      Job Title / Role
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
+                      Role Title
                     </label>
                     <input
                       type="text"
                       value={exp.role}
                       onChange={(e) => handleUpdateExperience(expIdx, { role: e.target.value })}
-                      className="w-full text-xs font-medium p-2 rounded-lg border border-stone-300 bg-white"
+                      className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white font-semibold text-stone-900"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
-                      Company / Organization
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
+                      Company Name
                     </label>
                     <input
                       type="text"
                       value={exp.company}
                       onChange={(e) => handleUpdateExperience(expIdx, { company: e.target.value })}
-                      className="w-full text-xs font-medium p-2 rounded-lg border border-stone-300 bg-white"
+                      className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white text-stone-900"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
-                      Location
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
+                      City, Country
                     </label>
                     <input
                       type="text"
                       value={exp.location}
                       onChange={(e) => handleUpdateExperience(expIdx, { location: e.target.value })}
-                      className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white"
+                      className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white text-stone-900"
                     />
                   </div>
+
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                      <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
                         Start Date
                       </label>
                       <input
                         type="text"
                         value={exp.startDate}
                         onChange={(e) => handleUpdateExperience(expIdx, { startDate: e.target.value })}
-                        className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white"
+                        className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white text-stone-900"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                      <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
                         End Date
                       </label>
                       <input
                         type="text"
                         value={exp.endDate}
                         onChange={(e) => handleUpdateExperience(expIdx, { endDate: e.target.value })}
-                        className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white"
+                        className="w-full text-xs p-2 rounded-lg border border-stone-300 bg-white text-stone-900"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Key Responsibilities */}
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
+                {/* Responsibilities */}
+                <div className="space-y-1.5 pt-2">
+                  <div className="flex items-center justify-between">
                     <label className="block text-[11px] font-semibold text-stone-600">
-                      Key Duties & Achievements (Action Verbs)
+                      Key Responsibilities & Operational Duties:
                     </label>
                     <button
                       type="button"
                       onClick={() => handleAddResponsibility(expIdx)}
-                      className="text-[11px] font-semibold text-amber-700 hover:text-amber-800 flex items-center gap-1"
+                      className="text-amber-700 hover:text-amber-800 text-[11px] font-medium flex items-center gap-1 cursor-pointer"
                     >
                       <Plus className="w-3 h-3" />
                       <span>Add Duty</span>
                     </button>
                   </div>
 
-                  <div className="space-y-1.5">
-                    {exp.responsibilities.map((resp, respIdx) => (
-                      <div key={respIdx} className="flex items-center gap-2">
-                        <span className="text-amber-700 font-bold">•</span>
-                        <input
-                          type="text"
-                          value={resp}
-                          onChange={(e) =>
-                            handleUpdateResponsibility(expIdx, respIdx, e.target.value)
-                          }
-                          className="flex-1 text-xs p-1.5 rounded border border-stone-300 bg-white"
-                        />
-                        {exp.responsibilities.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveResponsibility(expIdx, respIdx)}
-                            className="text-stone-400 hover:text-red-500 p-1"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  {exp.responsibilities.map((resp, respIdx) => (
+                    <div key={respIdx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={resp}
+                        onChange={(e) => handleUpdateResponsibility(expIdx, respIdx, e.target.value)}
+                        className="flex-1 text-xs p-1.5 rounded border border-stone-300 bg-white text-stone-900"
+                      />
+                      {exp.responsibilities.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveResponsibility(expIdx, respIdx)}
+                          className="text-stone-400 hover:text-red-600 p-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
@@ -576,184 +571,81 @@ export const CvEditor: React.FC<CvEditorProps> = ({
 
       {/* Tab 3: Operational Skills */}
       {activeTab === 'skills' && (
-        <div className="bg-white rounded-b-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-6">
-          {/* Operational Skills */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-stone-800 uppercase tracking-wide">
-                Operational & Warehouse Skills
-              </label>
-              <span className="text-[11px] text-stone-500">Physical handling, scanning & safety</span>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-3">
-              {cv.operationalSkills.map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-amber-50 border border-amber-200 text-amber-950 font-medium"
-                >
-                  <span>{skill}</span>
+        <div className="bg-white rounded-b-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-5">
+          {/* Warehouse Competencies */}
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-stone-700">
+              Warehouse & Logistics Operational Skills:
+            </label>
+            <div className="space-y-1.5">
+              {cv.operationalSkills.map((s, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={s}
+                    onChange={(e) => {
+                      const newS = [...cv.operationalSkills];
+                      newS[idx] = e.target.value;
+                      onChange({ operationalSkills: newS });
+                    }}
+                    className="flex-1 text-xs p-2 rounded-lg border border-stone-300 bg-white text-stone-900 font-medium"
+                  />
                   <button
                     type="button"
                     onClick={() => handleRemoveSkill(idx)}
-                    className="text-amber-700 hover:text-red-600"
+                    className="text-stone-400 hover:text-red-600 p-1 cursor-pointer"
                   >
-                    ×
+                    <Trash2 className="w-4 h-4" />
                   </button>
-                </span>
+                </div>
               ))}
             </div>
-
-            {/* Quick add */}
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                id="new-operational-skill-input"
-                placeholder="Add custom operational skill (e.g. Electric Pallet Jack, Inventory Staging)..."
-                className="flex-1 text-xs p-2 rounded-lg border border-stone-300"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddSkill((e.target as HTMLInputElement).value);
-                    (e.target as HTMLInputElement).value = '';
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  const input = document.getElementById('new-operational-skill-input') as HTMLInputElement;
-                  if (input && input.value) {
-                    handleAddSkill(input.value);
-                    input.value = '';
-                  }
-                }}
-                className="px-3 py-2 bg-stone-800 text-white rounded-lg text-xs font-semibold"
-              >
-                Add
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleAddSkill('Safe Container Devanning & Pallet Staging')}
+              className="text-xs font-semibold text-amber-700 hover:text-amber-800 flex items-center gap-1 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Operational Skill</span>
+            </button>
           </div>
 
-          {/* Personal Strengths / Stamina */}
-          <div className="pt-4 border-t border-stone-200">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-stone-800 uppercase tracking-wide">
-                Work Ethic & Physical Strengths
-              </label>
-              <span className="text-[11px] text-stone-500">Punctuality, shifts & stamina</span>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-3">
-              {cv.personalStrengths.map((strength, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-stone-100 border border-stone-300 text-stone-900 font-medium"
-                >
-                  <span>{strength}</span>
+          {/* Personal Strengths & Stamina */}
+          <div className="space-y-2 pt-3 border-t border-stone-200">
+            <label className="block text-xs font-semibold text-stone-700">
+              Physical Stamina & Work Ethic Strengths:
+            </label>
+            <div className="space-y-1.5">
+              {cv.personalStrengths.map((str, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={str}
+                    onChange={(e) => {
+                      const newStr = [...cv.personalStrengths];
+                      newStr[idx] = e.target.value;
+                      onChange({ personalStrengths: newStr });
+                    }}
+                    className="flex-1 text-xs p-2 rounded-lg border border-stone-300 bg-white text-stone-900"
+                  />
                   <button
                     type="button"
                     onClick={() => handleRemoveStrength(idx)}
-                    className="text-stone-500 hover:text-red-600"
+                    className="text-stone-400 hover:text-red-600 p-1 cursor-pointer"
                   >
-                    ×
+                    <Trash2 className="w-4 h-4" />
                   </button>
-                </span>
+                </div>
               ))}
             </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                id="new-strength-input"
-                placeholder="Add work ethic strength (e.g. High Attendance, Weekend Availability)..."
-                className="flex-1 text-xs p-2 rounded-lg border border-stone-300"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddStrength((e.target as HTMLInputElement).value);
-                    (e.target as HTMLInputElement).value = '';
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  const input = document.getElementById('new-strength-input') as HTMLInputElement;
-                  if (input && input.value) {
-                    handleAddStrength(input.value);
-                    input.value = '';
-                  }
-                }}
-                className="px-3 py-2 bg-stone-800 text-white rounded-lg text-xs font-semibold"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-
-          {/* Material Handling Equipment Skills (Page 2 Matrix) */}
-          <div className="pt-4 border-t border-stone-200">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-stone-800 uppercase tracking-wide">
-                Material Handling Equipment & Industrial Systems (Page 2 Matrix)
-              </label>
-              <span className="text-[11px] text-stone-500">Pallet trucks, RF guns, dock levelers</span>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-3">
-              {(cv.equipmentSkills || []).map((eq, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-amber-50/80 border border-amber-200 text-amber-950 font-medium"
-                >
-                  <Wrench className="w-3 h-3 text-amber-700 shrink-0" />
-                  <span>{eq}</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newEq = (cv.equipmentSkills || []).filter((_, i) => i !== idx);
-                      onChange({ equipmentSkills: newEq });
-                    }}
-                    className="text-amber-700 hover:text-red-600 ml-1 font-bold"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                id="new-equipment-input"
-                placeholder="Add equipment (e.g. Electric Walkie Stacker, Stretch Wrapper)..."
-                className="flex-1 text-xs p-2 rounded-lg border border-stone-300"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const val = (e.target as HTMLInputElement).value.trim();
-                    if (val) {
-                      onChange({ equipmentSkills: [...(cv.equipmentSkills || []), val] });
-                      (e.target as HTMLInputElement).value = '';
-                    }
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  const input = document.getElementById('new-equipment-input') as HTMLInputElement;
-                  if (input && input.value.trim()) {
-                    onChange({ equipmentSkills: [...(cv.equipmentSkills || []), input.value.trim()] });
-                    input.value = '';
-                  }
-                }}
-                className="px-3 py-2 bg-stone-800 text-white rounded-lg text-xs font-semibold"
-              >
-                Add
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleAddStrength('High Energy & Punctual for Rotating Shifts')}
+              className="text-xs font-semibold text-amber-700 hover:text-amber-800 flex items-center gap-1 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Strength / Stamina Point</span>
+            </button>
           </div>
         </div>
       )}
@@ -761,16 +653,14 @@ export const CvEditor: React.FC<CvEditorProps> = ({
       {/* Tab 4: Education */}
       {activeTab === 'education' && (
         <div className="bg-white rounded-b-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-stone-600 font-medium">
-              Academic credentials and schooling:
-            </span>
-          </div>
+          <span className="text-xs text-stone-600 font-medium block">
+            Educational credentials & school certificates:
+          </span>
 
           <div className="space-y-3">
             {cv.education.map((edu, idx) => (
-              <div key={edu.id} className="p-3 bg-stone-50 border border-stone-200 rounded-lg space-y-2 text-xs">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div key={edu.id} className="p-3 bg-stone-50 border border-stone-200 rounded-lg text-xs space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
                       Degree / Certificate
@@ -783,12 +673,12 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                         newEd[idx].degree = e.target.value;
                         onChange({ education: newEd });
                       }}
-                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white"
+                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white font-bold text-stone-900"
                     />
                   </div>
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
-                      Institution / Board
+                      Institution / School
                     </label>
                     <input
                       type="text"
@@ -798,22 +688,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                         newEd[idx].institution = e.target.value;
                         onChange({ education: newEd });
                       }}
-                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-600 mb-0.5">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      value={edu.location}
-                      onChange={(e) => {
-                        const newEd = [...cv.education];
-                        newEd[idx].location = e.target.value;
-                        onChange({ education: newEd });
-                      }}
-                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white"
+                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white text-stone-900"
                     />
                   </div>
                   <div>
@@ -828,7 +703,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                         newEd[idx].year = e.target.value;
                         onChange({ education: newEd });
                       }}
-                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white"
+                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white text-stone-900"
                     />
                   </div>
                 </div>
@@ -842,7 +717,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
       {activeTab === 'languages' && (
         <div className="bg-white rounded-b-xl p-4 sm:p-5 border border-stone-200 shadow-2xs space-y-4">
           <span className="text-xs text-stone-600 font-medium block">
-            Languages spoken with CEFR European proficiency levels (Crucial for floor instructions):
+            Languages spoken with CEFR proficiency levels (Crucial for floor instructions):
           </span>
 
           <div className="space-y-3">
@@ -861,7 +736,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                         newL[idx].language = e.target.value;
                         onChange({ languages: newL });
                       }}
-                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white font-semibold"
+                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white font-semibold text-stone-900"
                     />
                   </div>
 
@@ -877,7 +752,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                         newL[idx].proficiency = e.target.value;
                         onChange({ languages: newL });
                       }}
-                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white"
+                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white text-stone-900"
                     />
                   </div>
 
@@ -892,7 +767,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
                         newL[idx].levelBadge = e.target.value;
                         onChange({ languages: newL });
                       }}
-                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white font-bold"
+                      className="w-full text-xs p-1.5 rounded border border-stone-300 bg-white font-bold text-stone-900"
                     >
                       <option value="A1 Learner">A1 Learner (Basic vocabulary & greetings)</option>
                       <option value="A2 Elementary">A2 Elementary (Basic floor commands)</option>
@@ -914,7 +789,7 @@ export const CvEditor: React.FC<CvEditorProps> = ({
         <button
           type="button"
           onClick={onNavigateToPreview}
-          className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <FileCheck className="w-4 h-4" />
           <span>Save & View CV Document</span>

@@ -45,14 +45,13 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Ensure name, maritalStatus, nationality, and email stay fixed as requested
+        // If prior session had personal identity cached, sanitize to generic defaults
+        if (parsed.fullName === 'Abdul Raheem' || parsed.email?.includes('abdulraheem18822')) {
+          return INITIAL_CANDIDATE_DETAILS;
+        }
         return {
           ...INITIAL_CANDIDATE_DETAILS,
           ...parsed,
-          fullName: 'Abdul Raheem',
-          email: 'abdulraheem18822@gmail.com',
-          nationality: 'Indian Citizen (Non-EU)',
-          maritalStatus: 'Unmarried (Single)',
           passport: {
             ...INITIAL_CANDIDATE_DETAILS.passport,
             ...(parsed.passport || {}),
@@ -544,6 +543,7 @@ Indian Citizen • Passport: ${details.passport.passportNumber}
                 details={details}
                 cv={cv}
                 onChange={handleCvChange}
+                onUpdateDetails={handleDetailsChange}
                 onResetCv={handleResetCv}
                 onNavigateToPreview={handleNavigateToCvView}
               />
@@ -574,6 +574,7 @@ Indian Citizen • Passport: ${details.passport.passportNumber}
                   setActiveTab('preview_letter');
                 }}
                 onUpdateCv={handleCvChange}
+                onUpdateDetails={handleDetailsChange}
               />
             ) : (
               <CoverLetterPreview
@@ -584,6 +585,16 @@ Indian Citizen • Passport: ${details.passport.passportNumber}
                 onPrint={handlePrint}
                 onCopy={handleCopy}
                 copied={copied}
+                onEditLetter={() => {
+                  setSidebarTab('letter');
+                  setActiveTab('edit_letter');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onEditDetails={() => {
+                  setSidebarTab('details');
+                  setActiveTab('edit_details');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
             )}
           </div>

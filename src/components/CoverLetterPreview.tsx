@@ -14,9 +14,10 @@ import {
   Edit3,
   Calendar,
   Globe2,
-  Lock,
   Sparkles,
   Loader2,
+  User,
+  CheckCircle2,
 } from 'lucide-react';
 import { exportCoverLetterToPdf, generateVectorPdf } from '../utils/pdfExport';
 
@@ -28,6 +29,8 @@ interface CoverLetterPreviewProps {
   onPrint: () => void;
   onCopy: () => void;
   copied: boolean;
+  onEditLetter?: () => void;
+  onEditDetails?: () => void;
 }
 
 export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
@@ -38,6 +41,8 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
   onPrint,
   onCopy,
   copied,
+  onEditLetter,
+  onEditDetails,
 }) => {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfSuccess, setPdfSuccess] = useState(false);
@@ -45,7 +50,7 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
   const handleDownloadPdf = async () => {
     try {
       setIsGeneratingPdf(true);
-      const safeName = details.fullName.trim().replace(/\s+/g, '_');
+      const safeName = (details.fullName || 'Candidate').trim().replace(/\s+/g, '_');
       const safeCountry = details.targetCountry.replace(/\s+/g, '_');
       const safeJob = details.jobCategory.replace(/\s+/g, '_');
       const fileName = `${safeName}_Cover_Letter_${safeCountry}_${safeJob}.pdf`;
@@ -55,7 +60,6 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
       setTimeout(() => setPdfSuccess(false), 3000);
     } catch (err) {
       console.error('Error downloading PDF:', err);
-      // Native print as safe secondary fallback
       window.print();
     } finally {
       setIsGeneratingPdf(false);
@@ -64,7 +68,7 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
 
   const handleDownloadVectorPdf = () => {
     try {
-      const safeName = details.fullName.trim().replace(/\s+/g, '_');
+      const safeName = (details.fullName || 'Candidate').trim().replace(/\s+/g, '_');
       const safeCountry = details.targetCountry.replace(/\s+/g, '_');
       const safeJob = details.jobCategory.replace(/\s+/g, '_');
       const fileName = `${safeName}_Cover_Letter_${safeCountry}_${safeJob}_ATS.pdf`;
@@ -80,83 +84,126 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
   return (
     <div className="w-full space-y-4">
       {/* Top Document Controls Bar (Hidden during window.print()) */}
-      <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs flex flex-wrap items-center justify-between gap-3 no-print">
-        <div className="flex items-center gap-2 text-xs font-semibold text-stone-700">
-          <FileText className="w-4 h-4 text-amber-600" />
-          <span>Letter Document View</span>
-          <span className="hidden sm:inline-block text-[11px] font-normal text-stone-400">
-            (Click any text below to edit directly)
-          </span>
+      <div className="bg-white p-3 sm:p-4 rounded-xl border border-stone-200 shadow-2xs space-y-3 no-print">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <FileText className="w-4 h-4 text-amber-600" />
+              <h2 className="text-sm sm:text-base font-bold text-stone-900">
+                Cover Letter Preview ({details.targetCountry})
+              </h2>
+              <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-semibold">
+                Click any text to edit inline
+              </span>
+            </div>
+            <p className="text-xs text-stone-500 mt-0.5">
+              Targeting employer work permit sponsorship in {details.targetCountry}.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            {/* Direct Edit Letter Button */}
+            {onEditLetter && (
+              <button
+                type="button"
+                onClick={onEditLetter}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-amber-700" />
+                <span>Edit Letter Content</span>
+              </button>
+            )}
+
+            {/* Direct Edit Details Button */}
+            {onEditDetails && (
+              <button
+                type="button"
+                onClick={onEditDetails}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <User className="w-3.5 h-3.5 text-stone-600" />
+                <span>Edit Details & Country</span>
+              </button>
+            )}
+
+            {/* Direct Download PDF Button */}
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              disabled={isGeneratingPdf}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white shadow-xs transition-all disabled:opacity-75 cursor-pointer"
+              title="Download formatted A4 PDF file directly"
+            >
+              {isGeneratingPdf ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Preparing PDF...</span>
+                </>
+              ) : pdfSuccess ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-white" />
+                  <span>PDF Downloaded!</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download PDF</span>
+                </>
+              )}
+            </button>
+
+            {/* Direct Clean ATS Vector PDF */}
+            <button
+              type="button"
+              onClick={handleDownloadVectorPdf}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
+              title="Download sharp vector text PDF (Instant, 100% ATS parseable)"
+            >
+              <FileText className="w-3.5 h-3.5 text-stone-600" />
+              <span>ATS Clean PDF</span>
+            </button>
+
+            {/* Native Print */}
+            <button
+              type="button"
+              onClick={onPrint}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
+              title="Print or Save as PDF using browser printer"
+            >
+              <Printer className="w-3.5 h-3.5 text-stone-600" />
+              <span className="hidden sm:inline">Print</span>
+            </button>
+
+            {/* Copy Full Text */}
+            <button
+              type="button"
+              onClick={onCopy}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
+              title="Copy letter text to clipboard"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-stone-600" />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Direct Download PDF Button */}
-          <button
-            type="button"
-            onClick={handleDownloadPdf}
-            disabled={isGeneratingPdf}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white shadow-xs transition-all disabled:opacity-75 cursor-pointer"
-            title="Download formatted A4 PDF file directly"
-          >
-            {isGeneratingPdf ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Preparing PDF...</span>
-              </>
-            ) : pdfSuccess ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-white" />
-                <span>PDF Downloaded!</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-3.5 h-3.5" />
-                <span>Download PDF</span>
-              </>
-            )}
-          </button>
-
-          {/* Direct Clean ATS Vector PDF */}
-          <button
-            type="button"
-            onClick={handleDownloadVectorPdf}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
-            title="Download sharp vector text PDF (Instant, 100% ATS parseable)"
-          >
-            <FileText className="w-3.5 h-3.5 text-stone-600" />
-            <span>ATS Clean PDF</span>
-          </button>
-
-          {/* Native Print / Save Dialog */}
-          <button
-            type="button"
-            onClick={onPrint}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
-            title="Print or Save as PDF using browser printer"
-          >
-            <Printer className="w-3.5 h-3.5 text-stone-600" />
-            <span>Print</span>
-          </button>
-
-          {/* Copy Full Text */}
-          <button
-            type="button"
-            onClick={onCopy}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
-            title="Copy letter text to clipboard"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-emerald-700">Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5 text-stone-600" />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
+        {/* Quick Edit Guidance Strip */}
+        <div className="bg-amber-50/70 border border-amber-200/80 rounded-lg p-2.5 text-xs text-amber-900 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-700 shrink-0" />
+            <span>
+              <strong>Full Edit Access:</strong> You can click directly on any text or paragraph in the letter below to edit it immediately, or click <strong>&ldquo;Edit Letter Content&rdquo;</strong> above to write full customized paragraphs.
+            </span>
+          </div>
         </div>
       </div>
 
@@ -175,6 +222,7 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
                 suppressContentEditableWarning
                 onBlur={(e) => onDetailsChange({ fullName: e.currentTarget.innerText })}
                 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight cursor-text hover:bg-amber-50/50 rounded px-1 -mx-1"
+                title="Click to edit name"
               >
                 {details.fullName}
               </h1>
@@ -183,19 +231,60 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
                 suppressContentEditableWarning
                 onBlur={(e) => onDetailsChange({ targetJobTitle: e.currentTarget.innerText })}
                 className="text-sm sm:text-base font-medium text-amber-800 mt-1 cursor-text hover:bg-amber-50/50 rounded px-1 -mx-1"
+                title="Click to edit job title"
               >
                 {details.targetJobTitle}
               </p>
               <p className="text-xs text-stone-600 mt-1">
-                <span className="font-semibold">{details.nationality}</span> • <span>Marital Status: {details.maritalStatus}</span>
+                <span
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => onDetailsChange({ nationality: e.currentTarget.innerText })}
+                  className="font-semibold cursor-text hover:bg-amber-50/50 rounded px-0.5"
+                >
+                  {details.nationality}
+                </span>
+                {' • '}
+                <span>
+                  Marital Status:{' '}
+                  <span
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => onDetailsChange({ maritalStatus: e.currentTarget.innerText })}
+                    className="cursor-text hover:bg-amber-50/50 rounded px-0.5"
+                  >
+                    {details.maritalStatus}
+                  </span>
+                </span>
               </p>
             </div>
 
             {/* Candidate Contacts */}
             <div className="text-xs text-stone-600 space-y-1 sm:text-right">
-              <p className="font-medium text-stone-900">{details.email}</p>
-              <p>{details.phone}</p>
-              <p>{details.currentAddress ? `${details.currentAddress}, ` : ''}{details.cityCountry}</p>
+              <p
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => onDetailsChange({ email: e.currentTarget.innerText })}
+                className="font-medium text-stone-900 cursor-text hover:bg-amber-50/50 rounded px-1 -mx-1"
+              >
+                {details.email}
+              </p>
+              <p
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => onDetailsChange({ phone: e.currentTarget.innerText })}
+                className="cursor-text hover:bg-amber-50/50 rounded px-1 -mx-1"
+              >
+                {details.phone}
+              </p>
+              <p
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => onDetailsChange({ cityCountry: e.currentTarget.innerText })}
+                className="cursor-text hover:bg-amber-50/50 rounded px-1 -mx-1"
+              >
+                {details.currentAddress ? `${details.currentAddress}, ` : ''}{details.cityCountry}
+              </p>
               <p className="text-[11px] text-amber-900 font-semibold bg-amber-50 inline-block px-2 py-0.5 rounded border border-amber-200">
                 Target: {details.targetCountry} Work Permit
               </p>
@@ -203,7 +292,7 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
           </div>
         </header>
 
-        {/* Passport & Candidate Verification Card (Essential for European recruiters handling Non-EU work permits) */}
+        {/* Passport & Candidate Verification Card */}
         {details.showPassportInLetter && (
           <div className="mb-6 p-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-700">
             <div className="flex items-center justify-between border-b border-stone-200/80 pb-2 mb-2">
@@ -211,25 +300,69 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-700 shrink-0" />
                 <span>Candidate Identity & Work Permit Verification Summary</span>
               </span>
-              <span className="text-[10px] text-stone-500 font-medium">Non-EU Employment Candidate</span>
+              <span className="text-[10px] text-stone-500 font-medium">Employment Candidate</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
               <div>
                 <span className="text-stone-500 block text-[10px]">Passport Number:</span>
-                <span className="font-mono font-bold text-stone-900">{details.passport.passportNumber || 'Pending'}</span>
+                <span
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) =>
+                    onDetailsChange({
+                      passport: { ...details.passport, passportNumber: e.currentTarget.innerText },
+                    })
+                  }
+                  className="font-mono font-bold text-stone-900 cursor-text hover:bg-amber-50/50 rounded"
+                >
+                  {details.passport.passportNumber || 'Pending'}
+                </span>
               </div>
               <div>
                 <span className="text-stone-500 block text-[10px]">Date of Birth:</span>
-                <span className="font-medium text-stone-800">{details.passport.dateOfBirth}</span>
+                <span
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) =>
+                    onDetailsChange({
+                      passport: { ...details.passport, dateOfBirth: e.currentTarget.innerText },
+                    })
+                  }
+                  className="font-medium text-stone-800 cursor-text hover:bg-amber-50/50 rounded"
+                >
+                  {details.passport.dateOfBirth}
+                </span>
               </div>
               <div>
                 <span className="text-stone-500 block text-[10px]">Place of Issue:</span>
-                <span className="font-medium text-stone-800">{details.passport.placeOfIssue}</span>
+                <span
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) =>
+                    onDetailsChange({
+                      passport: { ...details.passport, placeOfIssue: e.currentTarget.innerText },
+                    })
+                  }
+                  className="font-medium text-stone-800 cursor-text hover:bg-amber-50/50 rounded"
+                >
+                  {details.passport.placeOfIssue}
+                </span>
               </div>
               <div>
                 <span className="text-stone-500 block text-[10px]">Passport Validity:</span>
-                <span className="font-medium text-stone-800">{details.passport.expiryDate ? `Exp: ${details.passport.expiryDate}` : 'Valid'}</span>
+                <span
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) =>
+                    onDetailsChange({
+                      passport: { ...details.passport, expiryDate: e.currentTarget.innerText },
+                    })
+                  }
+                  className="font-medium text-stone-800 cursor-text hover:bg-amber-50/50 rounded"
+                >
+                  {details.passport.expiryDate ? `Exp: ${details.passport.expiryDate}` : 'Valid'}
+                </span>
               </div>
             </div>
 
@@ -346,7 +479,7 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
             </div>
           )}
 
-          {/* Paragraph 4: Legal Eligibility, Indian Passport & Shift Flexibility */}
+          {/* Paragraph 4: Legal Eligibility & Shift Flexibility */}
           <p
             contentEditable
             suppressContentEditableWarning
@@ -383,7 +516,7 @@ export const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
               {details.fullName}
             </p>
             <p className="text-xs text-stone-500">
-              Indian Citizen • Candidate for {details.targetCountry} Employment Visa
+              {details.nationality} • Candidate for {details.targetCountry} Employment Visa
             </p>
             <p className="text-xs text-stone-500 font-mono">
               Passport No: {details.passport.passportNumber || '[Pending manual entry]'}

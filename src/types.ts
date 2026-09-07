@@ -1,19 +1,55 @@
+export type CvStyle = 'european' | 'gulf' | 'indian';
+
 export type TargetCountry =
+  // Schengen & EU
   | 'Poland'
-  | 'Singapore'
-  | 'Turkey'
-  | 'Greece'
-  | 'Romania'
-  | 'Czech Republic'
   | 'Germany'
+  | 'Czech Republic'
+  | 'Romania'
+  | 'Greece'
   | 'Hungary'
   | 'Croatia'
-  | 'Albania'
-  | 'Lithuania'
-  | 'Slovakia'
   | 'Italy'
-  | 'Portugal'
   | 'Spain'
+  | 'Portugal'
+  | 'France'
+  | 'Netherlands'
+  | 'Austria'
+  | 'Belgium'
+  | 'Sweden'
+  | 'Denmark'
+  | 'Finland'
+  | 'Norway'
+  | 'Switzerland'
+  | 'Lithuania'
+  | 'Latvia'
+  | 'Estonia'
+  | 'Slovakia'
+  | 'Slovenia'
+  | 'Bulgaria'
+  | 'Cyprus'
+  | 'Malta'
+  | 'Albania'
+  | 'Serbia'
+  | 'United Kingdom'
+  | 'Ireland'
+  // Gulf & Middle East (GCC)
+  | 'United Arab Emirates'
+  | 'Saudi Arabia'
+  | 'Qatar'
+  | 'Kuwait'
+  | 'Oman'
+  | 'Bahrain'
+  | 'Turkey'
+  // Asia-Pacific & Global
+  | 'Singapore'
+  | 'Malaysia'
+  | 'Japan'
+  | 'South Korea'
+  | 'Canada'
+  | 'Australia'
+  | 'New Zealand'
+  | 'United States'
   | 'Other';
 
 export type JobCategory =
@@ -34,7 +70,7 @@ export interface PassportDetails {
 }
 
 export interface CandidateDetails {
-  // Fixed & Personal Details
+  // Personal Details (100% Fully Editable)
   fullName: string;
   email: string;
   phone: string;
@@ -43,6 +79,14 @@ export interface CandidateDetails {
   dateOfBirth: string;
   currentAddress: string;
   cityCountry: string;
+
+  // Additional style-specific profile details
+  fatherName?: string;
+  religion?: string;
+  cvStyle?: CvStyle;
+  gulfVisaStatus?: string;
+  hasGulfLicense?: boolean;
+  gulfLicenseDetails?: string;
 
   // Passport info manually editable
   passport: PassportDetails;
@@ -108,6 +152,7 @@ export interface LanguageItem {
 }
 
 export interface CvContent {
+  style?: CvStyle;
   headline: string;
   professionalSummary: string;
   photoUrl?: string;
@@ -125,6 +170,10 @@ export interface CvContent {
   showReadinessBadges: boolean;
   gdprClause: string;
   references?: string;
+  // Gulf style specific declarations
+  gulfDeclaration?: string;
+  // Indian style specific declaration
+  indianDeclaration?: string;
 }
 
 export interface CountryInfo {
@@ -134,7 +183,7 @@ export interface CountryInfo {
   keyHubs: string[];
   visaProcessingTime: string;
   tips: string;
-  region: 'Schengen' | 'EU' | 'Eurasia' | 'Non-EU Europe' | 'Asia-Pacific';
+  region: 'Schengen' | 'EU' | 'Eurasia' | 'Non-EU Europe' | 'Gulf' | 'Asia-Pacific' | 'Global';
   gdprTitle: string;
   gdprText: string;
 }
