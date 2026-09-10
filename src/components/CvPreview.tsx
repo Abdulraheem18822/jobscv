@@ -66,6 +66,27 @@ export const CvPreview: React.FC<CvPreviewProps> = ({
   const pageCount = cv.pageCount || 2;
   const activeTheme = DOCUMENT_THEMES[details.theme || 'classic_amber'] || DOCUMENT_THEMES.classic_amber;
 
+  const fontFamily = cv.fontFamily || 'times';
+  const isCenteredFace = cv.headerLayout !== 'split';
+  const sideMarginMm = cv.sideMarginMm || 18;
+  const fontClass = fontFamily === 'sans' ? 'font-sans' : 'font-times-doc';
+
+  const handleSetFont = (f: 'times' | 'sans') => {
+    if (onUpdateCv) onUpdateCv({ fontFamily: f });
+  };
+
+  const handleSetLayout = (layout: 'center_face' | 'split') => {
+    if (onUpdateCv) onUpdateCv({ headerLayout: layout });
+  };
+
+  const handleSetMargin = (m: number) => {
+    if (onUpdateCv) onUpdateCv({ sideMarginMm: m });
+  };
+
+  const handleSetPageCount = (count: 2 | 3 | 4 | 5) => {
+    if (onUpdateCv) onUpdateCv({ pageCount: count });
+  };
+
   const fileName = `${(details.fullName || 'Candidate').trim().replace(/\s+/g, '_')}_CV_${details.targetCountry}_${activeStyle}.pdf`;
 
   const handleDownloadPdf = async () => {
@@ -422,18 +443,164 @@ ${cv.references || 'Available immediately upon request'}
             </button>
           </div>
         </div>
+
+        {/* PDF Download Settings Bar: Font, Center Face, Side Margin, Strict Page Lock */}
+        <div className="pt-2 border-t border-stone-200/70 flex flex-wrap items-center justify-between gap-3 text-xs bg-amber-50/50 p-2.5 rounded-lg border border-amber-200/70">
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Font Family Selector */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-stone-700 font-bold">Font:</span>
+              <div className="flex items-center bg-white rounded border border-stone-300 p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => handleSetFont('times')}
+                  className={`px-2.5 py-1 rounded text-xs font-serif transition-colors cursor-pointer ${
+                    fontFamily !== 'sans'
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="Times New Roman font"
+                >
+                  Times New Roman
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetFont('sans')}
+                  className={`px-2 py-1 rounded text-xs font-sans transition-colors cursor-pointer ${
+                    fontFamily === 'sans'
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="Clean Sans-Serif font"
+                >
+                  Sans
+                </button>
+              </div>
+            </div>
+
+            {/* Header / Face Alignment */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-stone-700 font-bold">Layout:</span>
+              <div className="flex items-center bg-white rounded border border-stone-300 p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => handleSetLayout('center_face')}
+                  className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    isCenteredFace
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="Center Face & Centered Header Info"
+                >
+                  Center Face
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetLayout('split')}
+                  className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    !isCenteredFace
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="Split Header Layout (Photo at Right)"
+                >
+                  Split
+                </button>
+              </div>
+            </div>
+
+            {/* Margin Setting */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-stone-700 font-bold">Side Margin:</span>
+              <div className="flex items-center bg-white rounded border border-stone-300 p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => handleSetMargin(18)}
+                  className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    sideMarginMm === 18
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="18 mm Standard Side Margin"
+                >
+                  18 mm (Std)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetMargin(16)}
+                  className={`px-2 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    sideMarginMm === 16
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="16 mm Margin"
+                >
+                  16 mm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetMargin(20)}
+                  className={`px-2 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    sideMarginMm === 20
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="20 mm Margin"
+                >
+                  20 mm
+                </button>
+              </div>
+            </div>
+
+            {/* Page Count */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-stone-700 font-bold">PDF Pages:</span>
+              <div className="flex items-center bg-white rounded border border-stone-300 p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => handleSetPageCount(2)}
+                  className={`px-2.5 py-1 rounded text-xs font-bold transition-colors cursor-pointer ${
+                    pageCount === 2
+                      ? 'bg-emerald-700 text-white'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="Strict 2-Page CV"
+                >
+                  2 Pages (Strict)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetPageCount(3)}
+                  className={`px-2 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    pageCount === 3
+                      ? 'bg-emerald-700 text-white font-bold'
+                      : 'text-stone-700 hover:bg-stone-100'
+                  }`}
+                  title="3 Pages"
+                >
+                  3
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Strict 2-Page PDF Export Guaranteed</span>
+          </div>
+        </div>
       </div>
 
       {/* The Printable / Exportable CV Document (2 Dedicated Sheets) */}
-      <div id="cv-printable-document" className="space-y-6 max-w-[850px] mx-auto text-stone-900 font-sans">
+      <div id="cv-printable-document" className={`space-y-6 max-w-[850px] mx-auto text-stone-900 ${fontClass}`}>
         
         {/* ======================================================== */}
         {/* SHEET 1 (PAGE 1 OF 2)                                    */}
         {/* ======================================================== */}
         <div
           id="cv-sheet-1"
-          className="bg-white rounded-xl border border-stone-300 shadow-sm p-6 sm:p-9 leading-relaxed relative flex flex-col justify-between"
-          style={{ minHeight: '1120px' }}
+          className="bg-white rounded-xl border border-stone-300 shadow-sm leading-relaxed relative flex flex-col justify-between sheet-page"
+          style={{ minHeight: '1120px', padding: `${sideMarginMm}mm` }}
         >
           <div>
             {/* Header Bar depending on style */}
@@ -444,10 +611,30 @@ ${cv.references || 'Available immediately upon request'}
                 ? 'border-blue-800'
                 : 'border-stone-900'
             }`}>
-              <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                {/* Left: Name, Title & Visa/Objective */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+              {isCenteredFace ? (
+                /* Centered Face & Centered Details Layout */
+                <div className="flex flex-col items-center text-center">
+                  {cv.showPhoto !== false && (
+                    <div className="mb-3 flex flex-col items-center">
+                      <div
+                        className={`w-24 h-32 sm:w-28 sm:h-36 rounded-sm border-2 border-stone-300 shadow-xs overflow-hidden flex items-center justify-center ${
+                          cv.photoWhiteBackground !== false ? 'bg-white' : 'bg-stone-50'
+                        }`}
+                      >
+                        <img
+                          src={photoSource}
+                          alt={`${details.fullName} - Passport Spec`}
+                          className="w-full h-full object-cover object-top"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <span className="text-[9px] font-bold text-stone-500 uppercase tracking-widest mt-1">
+                        35 × 45 mm Spec (White BG)
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-2 mb-1">
                     <span className={`text-xs uppercase font-bold tracking-wider ${
                       activeStyle === 'gulf'
                         ? 'text-emerald-800'
@@ -462,9 +649,10 @@ ${cv.references || 'Available immediately upon request'}
                         : 'Curriculum Vitae • Europass Standard'}
                     </span>
                     <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
-                      Page 1 of 2
+                      Page 1 of {pageCount}
                     </span>
                   </div>
+
                   <h1
                     contentEditable
                     suppressContentEditableWarning
@@ -474,13 +662,14 @@ ${cv.references || 'Available immediately upon request'}
                     }}
                     className={`text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-950 uppercase ${
                       highlightMode
-                        ? 'outline-dashed outline-1 outline-amber-400 hover:outline-amber-600 hover:bg-amber-50/40 rounded px-1 cursor-text'
+                        ? 'outline-dashed outline-1 outline-amber-400 hover:outline-amber-600 hover:bg-amber-50/40 rounded px-2 cursor-text'
                         : ''
                     }`}
                     title={highlightMode ? 'Click to edit name directly' : undefined}
                   >
                     {details.fullName}
                   </h1>
+
                   <p
                     contentEditable
                     suppressContentEditableWarning
@@ -491,7 +680,7 @@ ${cv.references || 'Available immediately upon request'}
                         if (onUpdateCv) onUpdateCv({ targetJobTitle: val });
                       }
                     }}
-                    className={`text-sm sm:text-base font-bold mt-0.5 ${
+                    className={`text-sm sm:text-base font-bold mt-1 ${
                       activeStyle === 'gulf'
                         ? 'text-emerald-800'
                         : activeStyle === 'indian'
@@ -499,13 +688,14 @@ ${cv.references || 'Available immediately upon request'}
                         : 'text-amber-800'
                     } ${
                       highlightMode
-                        ? 'outline-dashed outline-1 outline-amber-400 hover:outline-amber-600 hover:bg-amber-50/40 rounded px-1 cursor-text'
+                        ? 'outline-dashed outline-1 outline-amber-400 hover:outline-amber-600 hover:bg-amber-50/40 rounded px-2 cursor-text'
                         : ''
                     }`}
                     title={highlightMode ? 'Click to edit target job title directly' : undefined}
                   >
                     {details.targetJobTitle}
                   </p>
+
                   <p className="text-xs font-semibold text-stone-700 mt-1">
                     {activeStyle === 'gulf' ? (
                       <>Targeting: {details.targetCountry} • GCC Sponsorship / Visa • {details.nationality}</>
@@ -516,8 +706,8 @@ ${cv.references || 'Available immediately upon request'}
                     )}
                   </p>
 
-                  {/* Contact Info */}
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-stone-700">
+                  {/* Contact Info Centered */}
+                  <div className="mt-2.5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-stone-700">
                     <div className="flex items-center gap-1">
                       <Mail className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                       <span
@@ -567,63 +757,226 @@ ${cv.references || 'Available immediately upon request'}
                       </span>
                     </div>
                   </div>
-                </div>
 
-                {/* Right: Standard Passport Photo (White Background) */}
-                {cv.showPhoto !== false && (
-                  <div className="shrink-0 flex flex-col items-center">
-                    <div
-                      className={`w-24 h-32 sm:w-28 sm:h-36 rounded-sm border-2 border-stone-300 shadow-xs overflow-hidden flex items-center justify-center ${
-                        cv.photoWhiteBackground !== false ? 'bg-white' : 'bg-stone-50'
-                      }`}
-                    >
-                      <img
-                        src={photoSource}
-                        alt={`${details.fullName} - Passport Spec`}
-                        className="w-full h-full object-cover object-top"
-                        referrerPolicy="no-referrer"
-                      />
+                  {/* Personal Meta Strip Centered */}
+                  <div className="mt-2.5 pt-2 border-t border-stone-200 w-full flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-stone-700">
+                    <div>
+                      <span className="text-stone-500">Nationality: </span>
+                      <span className="font-semibold text-stone-900">{details.nationality}</span>
                     </div>
-                    <span className="text-[9px] font-bold text-stone-500 uppercase tracking-widest mt-1">
-                      35 × 45 mm Spec
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Personal Meta Strip */}
-              <div className="mt-3 pt-2.5 border-t border-stone-200 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-stone-700">
-                <div>
-                  <span className="text-stone-500">Nationality: </span>
-                  <span className="font-semibold text-stone-900">{details.nationality}</span>
-                </div>
-                <div>•</div>
-                <div>
-                  <span className="text-stone-500">Marital Status: </span>
-                  <span className="font-semibold text-stone-900">{details.maritalStatus}</span>
-                </div>
-                <div>•</div>
-                <div>
-                  <span className="text-stone-500">Date of Birth: </span>
-                  <span className="font-semibold text-stone-900">{details.dateOfBirth}</span>
-                </div>
-                {details.fatherName && (
-                  <>
                     <div>•</div>
                     <div>
-                      <span className="text-stone-500">Father&apos;s Name: </span>
-                      <span className="font-semibold text-stone-900">{details.fatherName}</span>
+                      <span className="text-stone-500">Marital Status: </span>
+                      <span className="font-semibold text-stone-900">{details.maritalStatus}</span>
                     </div>
-                  </>
-                )}
-                <div>•</div>
-                <div>
-                  <span className="text-stone-500">Visa / Permit: </span>
-                  <span className="font-semibold text-emerald-800">
-                    {details.gulfVisaStatus || countryInfo.workPermitType.split('(')[0].trim()}
-                  </span>
+                    <div>•</div>
+                    <div>
+                      <span className="text-stone-500">Date of Birth: </span>
+                      <span className="font-semibold text-stone-900">{details.dateOfBirth}</span>
+                    </div>
+                    {details.fatherName && (
+                      <>
+                        <div>•</div>
+                        <div>
+                          <span className="text-stone-500">Father&apos;s Name: </span>
+                          <span className="font-semibold text-stone-900">{details.fatherName}</span>
+                        </div>
+                      </>
+                    )}
+                    <div>•</div>
+                    <div>
+                      <span className="text-stone-500">Visa / Permit: </span>
+                      <span className="font-semibold text-emerald-800">
+                        {details.gulfVisaStatus || countryInfo.workPermitType.split('(')[0].trim()}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* Split Layout (Left Details, Right Photo) */
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                  {/* Left: Name, Title & Visa/Objective */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-xs uppercase font-bold tracking-wider ${
+                        activeStyle === 'gulf'
+                          ? 'text-emerald-800'
+                          : activeStyle === 'indian'
+                          ? 'text-blue-800'
+                          : 'text-amber-700'
+                      }`}>
+                        {activeStyle === 'gulf'
+                          ? 'Curriculum Vitae • Gulf / GCC Format'
+                          : activeStyle === 'indian'
+                          ? 'Professional Resume • Industrial & Corporate Format'
+                          : 'Curriculum Vitae • Europass Standard'}
+                      </span>
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                        Page 1 of {pageCount}
+                      </span>
+                    </div>
+                    <h1
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const val = e.currentTarget.textContent?.trim();
+                        if (val && onUpdateDetails) onUpdateDetails({ fullName: val });
+                      }}
+                      className={`text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-950 uppercase ${
+                        highlightMode
+                          ? 'outline-dashed outline-1 outline-amber-400 hover:outline-amber-600 hover:bg-amber-50/40 rounded px-1 cursor-text'
+                          : ''
+                      }`}
+                      title={highlightMode ? 'Click to edit name directly' : undefined}
+                    >
+                      {details.fullName}
+                    </h1>
+                    <p
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const val = e.currentTarget.textContent?.trim();
+                        if (val) {
+                          if (onUpdateDetails) onUpdateDetails({ targetJobTitle: val });
+                          if (onUpdateCv) onUpdateCv({ targetJobTitle: val });
+                        }
+                      }}
+                      className={`text-sm sm:text-base font-bold mt-0.5 ${
+                        activeStyle === 'gulf'
+                          ? 'text-emerald-800'
+                          : activeStyle === 'indian'
+                          ? 'text-blue-800'
+                          : 'text-amber-800'
+                      } ${
+                        highlightMode
+                          ? 'outline-dashed outline-1 outline-amber-400 hover:outline-amber-600 hover:bg-amber-50/40 rounded px-1 cursor-text'
+                          : ''
+                      }`}
+                      title={highlightMode ? 'Click to edit target job title directly' : undefined}
+                    >
+                      {details.targetJobTitle}
+                    </p>
+                    <p className="text-xs font-semibold text-stone-700 mt-1">
+                      {activeStyle === 'gulf' ? (
+                        <>Targeting: {details.targetCountry} • GCC Sponsorship / Visa • {details.nationality}</>
+                      ) : isSingapore ? (
+                        <>Targeting: Singapore MOM Work Permit / S Pass • {details.nationality}</>
+                      ) : (
+                        <>Targeting: {details.targetCountry} Work Permit • {details.nationality}</>
+                      )}
+                    </p>
+
+                    {/* Contact Info */}
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-stone-700">
+                      <div className="flex items-center gap-1">
+                        <Mail className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const val = e.currentTarget.textContent?.trim();
+                            if (val && onUpdateDetails) onUpdateDetails({ email: val });
+                          }}
+                          className={`font-semibold text-stone-900 ${
+                            highlightMode ? 'outline-dashed outline-1 outline-amber-400 hover:bg-amber-50/40 rounded px-1 cursor-text' : ''
+                          }`}
+                        >
+                          {details.email}
+                        </span>
+                      </div>
+                      <div>•</div>
+                      <div className="flex items-center gap-1">
+                        <Phone className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const val = e.currentTarget.textContent?.trim();
+                            if (val && onUpdateDetails) onUpdateDetails({ phone: val });
+                          }}
+                          className={`font-semibold text-stone-900 ${
+                            highlightMode ? 'outline-dashed outline-1 outline-amber-400 hover:bg-amber-50/40 rounded px-1 cursor-text' : ''
+                          }`}
+                        >
+                          {details.phone}
+                        </span>
+                      </div>
+                      <div>•</div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                        <span
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const val = e.currentTarget.textContent?.trim();
+                            if (val && onUpdateDetails) onUpdateDetails({ cityCountry: val });
+                          }}
+                          className={highlightMode ? 'outline-dashed outline-1 outline-amber-400 hover:bg-amber-50/40 rounded px-1 cursor-text' : ''}
+                        >
+                          {details.currentAddress ? `${details.currentAddress}, ` : ''}{details.cityCountry}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Standard Passport Photo (White Background) */}
+                  {cv.showPhoto !== false && (
+                    <div className="shrink-0 flex flex-col items-center">
+                      <div
+                        className={`w-24 h-32 sm:w-28 sm:h-36 rounded-sm border-2 border-stone-300 shadow-xs overflow-hidden flex items-center justify-center ${
+                          cv.photoWhiteBackground !== false ? 'bg-white' : 'bg-stone-50'
+                        }`}
+                      >
+                        <img
+                          src={photoSource}
+                          alt={`${details.fullName} - Passport Spec`}
+                          className="w-full h-full object-cover object-top"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <span className="text-[9px] font-bold text-stone-500 uppercase tracking-widest mt-1">
+                        35 × 45 mm Spec
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!isCenteredFace && (
+                /* Personal Meta Strip for Split layout */
+                <div className="mt-3 pt-2.5 border-t border-stone-200 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-stone-700">
+                  <div>
+                    <span className="text-stone-500">Nationality: </span>
+                    <span className="font-semibold text-stone-900">{details.nationality}</span>
+                  </div>
+                  <div>•</div>
+                  <div>
+                    <span className="text-stone-500">Marital Status: </span>
+                    <span className="font-semibold text-stone-900">{details.maritalStatus}</span>
+                  </div>
+                  <div>•</div>
+                  <div>
+                    <span className="text-stone-500">Date of Birth: </span>
+                    <span className="font-semibold text-stone-900">{details.dateOfBirth}</span>
+                  </div>
+                  {details.fatherName && (
+                    <>
+                      <div>•</div>
+                      <div>
+                        <span className="text-stone-500">Father&apos;s Name: </span>
+                        <span className="font-semibold text-stone-900">{details.fatherName}</span>
+                      </div>
+                    </>
+                  )}
+                  <div>•</div>
+                  <div>
+                    <span className="text-stone-500">Visa / Permit: </span>
+                    <span className="font-semibold text-emerald-800">
+                      {details.gulfVisaStatus || countryInfo.workPermitType.split('(')[0].trim()}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Verification / Gulf / Indian Box */}
@@ -849,8 +1202,8 @@ ${cv.references || 'Available immediately upon request'}
         {/* ======================================================== */}
         <div
           id="cv-sheet-2"
-          className="bg-white rounded-xl border border-stone-300 shadow-sm p-6 sm:p-9 leading-relaxed relative flex flex-col justify-between"
-          style={{ minHeight: '1120px' }}
+          className="bg-white rounded-xl border border-stone-300 shadow-sm leading-relaxed relative flex flex-col justify-between sheet-page"
+          style={{ minHeight: '1120px', padding: `${sideMarginMm}mm` }}
         >
           <div>
             {/* Running Header on Page 2 */}

@@ -210,6 +210,10 @@ export interface CvContent {
   showReadinessBadges: boolean;
   gdprClause: string;
   references?: string;
+  // Font and layout download settings
+  fontFamily?: 'times' | 'sans' | 'serif';
+  headerLayout?: 'center_face' | 'split';
+  sideMarginMm?: number;
   // Gulf style specific declarations
   gulfDeclaration?: string;
   // Indian style specific declaration

@@ -81,6 +81,9 @@ export default function App() {
         return {
           ...defaultCv,
           ...parsed,
+          fontFamily: parsed.fontFamily || 'times',
+          headerLayout: parsed.headerLayout || 'center_face',
+          sideMarginMm: parsed.sideMarginMm || 18,
           photoUrl: parsed.photoUrl || defaultCv.photoUrl,
           showPhoto: parsed.showPhoto !== undefined ? parsed.showPhoto : true,
           photoWhiteBackground: parsed.photoWhiteBackground !== undefined ? parsed.photoWhiteBackground : true,
@@ -236,7 +239,7 @@ export default function App() {
         setActiveTab('preview_cv');
         await new Promise((resolve) => setTimeout(resolve, 300));
         const fileName = `${safeName}_CV_Resume_${safeCountry}_${safeJob}.pdf`;
-        await exportCvToPdf('printable-cv-document', fileName, details, cv, setIsGeneratingPdf);
+        await exportCvToPdf('cv-printable-document', fileName, details, cv, setIsGeneratingPdf);
       } else {
         setActiveTab('preview_letter');
         await new Promise((resolve) => setTimeout(resolve, 300));

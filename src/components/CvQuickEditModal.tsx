@@ -41,11 +41,13 @@ export const CvQuickEditModal: React.FC<CvQuickEditModalProps> = ({
   // Work experience helpers
   const handleAddExperience = () => {
     const newExp: WorkExperience = {
+      id: `exp-${Date.now()}`,
       role: details.targetJobTitle || 'Operative',
       company: 'Logistics Facility / Employer',
       location: details.cityCountry || 'India',
       startDate: '2022',
       endDate: 'Present',
+      isCurrent: true,
       responsibilities: [
         'Executed daily operational procedures maintaining 100% compliance with safety and quality standards.',
         'Collaborated with multinational team leads to achieve daily production and delivery quotas.',
@@ -72,6 +74,7 @@ export const CvQuickEditModal: React.FC<CvQuickEditModalProps> = ({
   // Education helpers
   const handleAddEducation = () => {
     const newEdu: EducationItem = {
+      id: `edu-${Date.now()}`,
       degree: 'Vocational / Secondary Certificate',
       institution: 'State Technical Board / School',
       location: details.cityCountry || 'India',
@@ -98,6 +101,7 @@ export const CvQuickEditModal: React.FC<CvQuickEditModalProps> = ({
   // Languages helpers
   const handleAddLanguage = () => {
     const newLang: LanguageItem = {
+      id: `lang-${Date.now()}`,
       language: 'English',
       proficiency: 'Professional Working Proficiency',
       levelBadge: 'B2 / Fluent',

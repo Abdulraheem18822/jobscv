@@ -10,14 +10,18 @@
   font-family: 'Source Serif 4', Georgia, serif;
 }
 
+.font-times-doc {
+  font-family: 'Times New Roman', Times, 'Nimbus Roman No9 L', serif;
+}
+
 .font-mono-doc {
   font-family: 'JetBrains Mono', monospace;
 }
 
 @media print {
   @page {
-    size: A4;
-    margin: 16mm 18mm;
+    size: A4 portrait;
+    margin: 14mm 18mm;
   }
 
   body {
@@ -40,5 +44,20 @@
 
   .print-page-break {
     page-break-after: always;
+    break-after: page;
+  }
+
+  .sheet-page {
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .sheet-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
   }
 }

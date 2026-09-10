@@ -1303,6 +1303,9 @@ export function generateCvContent(
       'Machinery & Pedestrian Separation: Strict compliance with designated pedestrian walkways, crossing eyes, and forklift exclusion corridors.',
       'Substance & Distraction Free: 100% adherence to zero-tolerance policies regarding mobile phone use, alcohol, and prohibited substances on warehouse floors.',
     ],
+    fontFamily: 'times',
+    headerLayout: 'center_face',
+    sideMarginMm: 18,
   };
 }
 
